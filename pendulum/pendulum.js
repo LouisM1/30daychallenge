@@ -104,12 +104,12 @@ function drawPendulum() {
     ctx.moveTo(centerX, centerY);
     ctx.lineTo(x1, y1);
     ctx.lineTo(x2, y2);
-    ctx.strokeStyle = 'black';
+    ctx.strokeStyle = 'white';
     ctx.lineWidth = 2;
     ctx.stroke();
 
     // Draw masses
-    ctx.fillStyle = 'red';
+    ctx.fillStyle = 'white';
     ctx.beginPath();
     ctx.arc(x1, y1, m1, 0, 2 * Math.PI);
     ctx.fill();
@@ -121,7 +121,7 @@ function drawPendulum() {
 function drawCircle() {
     ctx.beginPath();
     ctx.arc(centerX, centerY, l1 + l2, 0, 2 * Math.PI);
-    ctx.strokeStyle = 'rgba(0, 0, 0, 0.1)';
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
     ctx.lineWidth = 1;
     ctx.stroke();
 }
