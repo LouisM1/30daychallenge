@@ -117,6 +117,10 @@ function drawPendulum() {
     let x2 = x1 + l2 * Math.sin(a2);
     let y2 = y1 + l2 * Math.cos(a2);
 
+    // Set glow effect
+    ctx.shadowBlur = 10;
+    ctx.shadowColor = 'rgba(255, 255, 255, 0.5)';
+
     if (isTracing) {
         // Draw trace
         ctx.beginPath();
@@ -152,6 +156,10 @@ function drawPendulum() {
     ctx.beginPath();
     ctx.arc(x2, y2, m2, 0, 2 * Math.PI);
     ctx.fill();
+
+    // Reset shadow properties
+    ctx.shadowBlur = 0;
+    ctx.shadowColor = 'transparent';
 }
 function drawCircle() {
     ctx.beginPath();
