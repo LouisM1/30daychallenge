@@ -2,8 +2,20 @@ body {
     margin: 0;
     padding: 0;
     overflow: hidden;
-    font-family: Arial, sans-serif;
+    font-family: Helvetica, Arial, sans-serif;
     background-color: black;
+    color: white;
+}
+
+.title {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 2em;
+    font-weight: bold;
+    text-align: center;
+    z-index: 1000;
 }
 
 .container {
@@ -15,8 +27,9 @@ body {
 canvas {
     display: block;
     width: 100vw;
-    height: 100vh;
+    height: calc(100vh - 150px);
     cursor: default;
+    margin-top: 150px;
 }
 
 .controls {
@@ -251,4 +264,17 @@ canvas.dragging {
 
 .button-container button:hover {
     background-color: rgba(255, 255, 255, 0.3);
+}
+
+.subtitle {
+    position: fixed;
+    top: 80px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 1em;
+    text-align: center;
+    color: rgba(255, 255, 255, 0.7);
+    max-width: 80%;
+    line-height: 1.4;
+    z-index: 1000;
 }

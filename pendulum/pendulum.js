@@ -37,7 +37,9 @@ let a1_v = 0, a2_v = 0; // Initial angular velocities
 
 function resizeCanvas() {
     canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
+    canvas.height = window.innerHeight - 150;
+    centerX = canvas.width / 2;
+    centerY = canvas.height / 2;
     initPendulum();
     drawPendulum();
 }
