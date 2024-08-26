@@ -185,14 +185,37 @@ function toggleInput(activeButton) {
     
     const isNumberActive = activeButton === toggleNumber;
     inputControls.querySelectorAll('input').forEach(input => {
+        const currentValue = input.value;
         if (isNumberActive) {
             input.type = 'number';
             input.step = input.id === 'speed' ? '1' : '0.1';
         } else {
             input.type = 'range';
         }
+        input.value = currentValue;
+        
+        // Ensure the number input respects min and max values
+        if (isNumberActive) {
+            input.min = input.getAttribute('min');
+            input.max = input.getAttribute('max');
+        }
     });
 }
 
 toggleNumber.addEventListener('click', () => toggleInput(toggleNumber));
 toggleSlider.addEventListener('click', () => toggleInput(toggleSlider));
+
+const resetButton = document.getElementById('resetButton');
+
+function resetPendulum() {
+    a1 = Math.PI / 2;
+    a2 = Math.PI / 2;
+    a1_v = 0;
+    a2_v = 0;
+    isAnimating = false;
+    startButton.textContent = 'Start';
+    initPendulum();
+    drawPendulum();
+}
+
+resetButton.addEventListener('click', resetPendulum);
