@@ -9,25 +9,31 @@
 <body>
     <canvas id="pendulumCanvas"></canvas>
     <div class="controls">
-        <div>
-            <label for="length1">Length 1</label>
-            <input type="range" id="length1" min="50" max="200" value="100">
+        <div class="input-toggle">
+            <button id="toggleNumber" class="toggle-button">Number</button>
+            <button id="toggleSlider" class="toggle-button active">Slider</button>
         </div>
-        <div>
-            <label for="length2">Length 2</label>
-            <input type="range" id="length2" min="50" max="200" value="100">
-        </div>
-        <div>
-            <label for="mass1">Mass 1</label>
-            <input type="range" id="mass1" min="5" max="20" value="10">
-        </div>
-        <div>
-            <label for="mass2">Mass 2</label>
-            <input type="range" id="mass2" min="5" max="20" value="10">
-        </div>
-        <div>
-            <label for="speed">Speed</label>
-            <input type="range" id="speed" min="1" max="500" value="70">
+        <div class="input-controls">
+            <div>
+                <label for="length1">Length 1</label>
+                <input type="range" id="length1" min="50" max="200" value="100">
+            </div>
+            <div>
+                <label for="length2">Length 2</label>
+                <input type="range" id="length2" min="50" max="200" value="100">
+            </div>
+            <div>
+                <label for="mass1">Mass 1</label>
+                <input type="range" id="mass1" min="5" max="20" value="10">
+            </div>
+            <div>
+                <label for="mass2">Mass 2</label>
+                <input type="range" id="mass2" min="5" max="20" value="10">
+            </div>
+            <div>
+                <label for="speed">Speed</label>
+                <input type="range" id="speed" min="1" max="500" value="70">
+            </div>
         </div>
         <button id="startButton">Start</button>
     </div>

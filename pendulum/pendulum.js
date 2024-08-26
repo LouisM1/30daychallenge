@@ -51,17 +51,17 @@ mass2Input.addEventListener('input', updateParameters);
 speedInput.addEventListener('input', updateSpeed);
 
 function updateParameters() {
-    l1 = parseInt(length1Input.value);
-    l2 = parseInt(length2Input.value);
-    m1 = parseInt(mass1Input.value);
-    m2 = parseInt(mass2Input.value);
+    l1 = parseFloat(length1Input.value);
+    l2 = parseFloat(length2Input.value);
+    m1 = parseFloat(mass1Input.value);
+    m2 = parseFloat(mass2Input.value);
     if (!isAnimating) {
         drawPendulum();
     }
 }
 
 function updateSpeed() {
-    speedMultiplier = parseInt(speedInput.value) / 5;
+    speedMultiplier = parseFloat(speedInput.value) / 5;
     if (!isAnimating) {
         drawPendulum();
     }
@@ -174,3 +174,25 @@ startButton.addEventListener('click', () => {
 });
 
 drawPendulum();
+
+const toggleNumber = document.getElementById('toggleNumber');
+const toggleSlider = document.getElementById('toggleSlider');
+const inputControls = document.querySelector('.input-controls');
+
+function toggleInput(activeButton) {
+    toggleNumber.classList.toggle('active', activeButton === toggleNumber);
+    toggleSlider.classList.toggle('active', activeButton === toggleSlider);
+    
+    const isNumberActive = activeButton === toggleNumber;
+    inputControls.querySelectorAll('input').forEach(input => {
+        if (isNumberActive) {
+            input.type = 'number';
+            input.step = input.id === 'speed' ? '1' : '0.1';
+        } else {
+            input.type = 'range';
+        }
+    });
+}
+
+toggleNumber.addEventListener('click', () => toggleInput(toggleNumber));
+toggleSlider.addEventListener('click', () => toggleInput(toggleSlider));

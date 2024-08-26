@@ -30,6 +30,7 @@ canvas {
     padding: 20px;
     border-radius: 10px;
     color: white;
+    width: 200px; /* Increase the width */
 }
 
 .controls div {
@@ -81,4 +82,48 @@ input[type="range"]::-webkit-slider-runnable-track {
 
 #startButton:hover {
     background-color: rgba(255, 255, 255, 0.3);
+}
+
+.input-toggle {
+    display: flex;
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+.toggle-button {
+    flex: 1;
+    padding: 10px;
+    background-color: rgba(255, 255, 255, 0.1);
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s;
+}
+
+.toggle-button:first-child {
+    border-top-left-radius: 5px;
+    border-bottom-left-radius: 5px;
+}
+
+.toggle-button:last-child {
+    border-top-right-radius: 5px;
+    border-bottom-right-radius: 5px;
+}
+
+.toggle-button.active {
+    background-color: rgba(255, 255, 255, 0.3);
+}
+
+.toggle-button:not(:last-child) {
+    border-right: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+input[type="number"] {
+    width: 150px;
+    background-color: rgba(255, 255, 255, 0.1);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    padding: 5px;
+    border-radius: 5px;
 }
