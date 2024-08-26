@@ -164,7 +164,9 @@ function drawCircle() {
 let lastTime = 0;
 
 function animate(currentTime) {
-    if (lastTime === 0 || !isAnimating) {
+    if (!isAnimating) return;
+
+    if (lastTime === 0) {
         lastTime = currentTime;
     }
 
@@ -175,9 +177,7 @@ function animate(currentTime) {
     updatePendulum(deltaTime);
     drawPendulum();
 
-    if (isAnimating) {
-        requestAnimationFrame(animate);
-    }
+    requestAnimationFrame(animate);
 }
 
 startButton.addEventListener('click', () => {
@@ -185,6 +185,7 @@ startButton.addEventListener('click', () => {
         isAnimating = true;
         isTracing = true;
         startButton.textContent = 'Stop';
+        lastTime = 0; // Reset lastTime when starting
         requestAnimationFrame(animate);
     } else {
         isAnimating = false;
