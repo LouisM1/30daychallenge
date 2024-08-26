@@ -88,28 +88,29 @@ input[type="range"]::-webkit-slider-runnable-track {
 
 .input-toggle {
     display: flex;
+    flex-direction: column;
     width: 100%;
     margin-bottom: 20px;
 }
 
 .toggle-button {
-    flex: 1;
+    width: 100%;
     padding: 10px;
     background-color: rgba(255, 255, 255, 0.1);
     color: white;
     border: none;
     cursor: pointer;
-    font-size: 14px;
+    font-size: 16px;
     transition: background-color 0.3s;
 }
 
 .toggle-button:first-child {
     border-top-left-radius: 5px;
-    border-bottom-left-radius: 5px;
+    border-top-right-radius: 5px;
 }
 
 .toggle-button:last-child {
-    border-top-right-radius: 5px;
+    border-bottom-left-radius: 5px;
     border-bottom-right-radius: 5px;
 }
 
@@ -118,7 +119,12 @@ input[type="range"]::-webkit-slider-runnable-track {
 }
 
 .toggle-button:not(:last-child) {
-    border-right: 1px solid rgba(255, 255, 255, 0.2);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.toggle-separator {
+    width: 1px;
+    background-color: rgba(255, 255, 255, 0.3);
 }
 
 input[type="number"] {
@@ -203,4 +209,31 @@ canvas.dragging {
     border-radius: 10px;
     color: white;
     width: 200px;
+}
+
+.button-container {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+.button-container button {
+    width: 100%;
+    padding: 10px;
+    background-color: rgba(255, 255, 255, 0.2);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s;
+    margin-bottom: 10px;
+}
+
+.button-container button:last-child {
+    margin-bottom: 0;
+}
+
+.button-container button:hover {
+    background-color: rgba(255, 255, 255, 0.3);
 }
