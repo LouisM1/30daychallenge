@@ -66,3 +66,19 @@ input[type="range"]::-webkit-slider-runnable-track {
     background: rgba(255, 255, 255, 0.3);
     border-radius: 2px;
 }
+
+#startButton {
+    width: 100%;
+    padding: 10px;
+    background-color: rgba(255, 255, 255, 0.2);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s;
+}
+
+#startButton:hover {
+    background-color: rgba(255, 255, 255, 0.3);
+}

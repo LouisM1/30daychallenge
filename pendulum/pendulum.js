@@ -6,11 +6,15 @@ const length1Input = document.getElementById('length1');
 const length2Input = document.getElementById('length2');
 const mass1Input = document.getElementById('mass1');
 const mass2Input = document.getElementById('mass2');
+const startButton = document.getElementById('startButton');
+const speedInput = document.getElementById('speed');
 
 // Pendulum parameters
 const g = 9.81; // Gravity
 let l1, l2, m1, m2, centerX, centerY;
-const speedMultiplier = 70; // Adjust this value to change the speed
+let speedMultiplier = 70; // Initial speed value
+
+let isAnimating = false;
 
 // Initialize pendulum
 function initPendulum() {
@@ -23,6 +27,7 @@ function initPendulum() {
     // Update input values
     length1Input.value = length2Input.value = l1;
     mass1Input.value = mass2Input.value = m1;
+    updateSpeed();
 }
 
 let a1 = Math.PI / 2, a2 = Math.PI / 2; // Initial angles
@@ -32,6 +37,7 @@ function resizeCanvas() {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
     initPendulum();
+    drawPendulum();
 }
 
 window.addEventListener('resize', resizeCanvas);
@@ -42,12 +48,23 @@ length1Input.addEventListener('input', updateParameters);
 length2Input.addEventListener('input', updateParameters);
 mass1Input.addEventListener('input', updateParameters);
 mass2Input.addEventListener('input', updateParameters);
+speedInput.addEventListener('input', updateSpeed);
 
 function updateParameters() {
     l1 = parseInt(length1Input.value);
     l2 = parseInt(length2Input.value);
     m1 = parseInt(mass1Input.value);
     m2 = parseInt(mass2Input.value);
+    if (!isAnimating) {
+        drawPendulum();
+    }
+}
+
+function updateSpeed() {
+    speedMultiplier = parseInt(speedInput.value) / 5;
+    if (!isAnimating) {
+        drawPendulum();
+    }
 }
 
 function updatePendulum(dt) {
@@ -139,7 +156,21 @@ function animate(currentTime) {
     updateParameters();
     updatePendulum(deltaTime);
     drawPendulum();
-    requestAnimationFrame(animate);
+
+    if (isAnimating) {
+        requestAnimationFrame(animate);
+    }
 }
 
-requestAnimationFrame(animate);
+startButton.addEventListener('click', () => {
+    if (!isAnimating) {
+        isAnimating = true;
+        startButton.textContent = 'Stop';
+        requestAnimationFrame(animate);
+    } else {
+        isAnimating = false;
+        startButton.textContent = 'Start';
+    }
+});
+
+drawPendulum();
