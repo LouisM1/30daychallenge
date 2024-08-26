@@ -139,10 +139,6 @@ li > * {
     transition: all 0.3s ease;
 }
 
-li:hover > * {
-    transform: scale(1.05);
-}
-
 .completion-date {
     font-size: 0.8vw;
     color: #999;
@@ -160,15 +156,11 @@ li:last-child {
     margin-bottom: 0;
 }
 
-li.active {
+li.active, li.completed {
     color: #fff;
 }
 
-li.completed {
-    color: #fff;
-}
-
-li.completed:hover {
+li.active:hover, li.completed:hover {
     color: #fff;
 }
 
@@ -422,4 +414,24 @@ body.drawer-open .top-left-text {
 
 li:hover .project-link {
     color: #fff;
+}
+
+.project-link {
+    position: relative;
+}
+
+.project-link::after {
+    content: '↗';
+    position: absolute;
+    right: -20px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 0.8em;
+    opacity: 0;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+li:hover .project-link::after {
+    opacity: 1;
+    transform: translateY(-50%) translateX(-5px);
 }
