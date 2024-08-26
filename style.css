@@ -410,3 +410,16 @@ body.drawer-open .top-left-text {
 .drawer-right .info-row:hover {
     opacity: 1;
 }
+
+.project-link {
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+li:hover .project-link {
+    color: #fff;
+}
