@@ -20,15 +20,15 @@ let isAnimating = false;
 
 // Initialize pendulum
 function initPendulum() {
-    const minDimension = Math.min(canvas.width, canvas.height);
-    l1 = l2 = minDimension * 0.2;
-    m1 = m2 = 10;
+    l1 = l2 = 175; // Set initial lengths to 175 pixels
+    m1 = m2 = 20;
     centerX = canvas.width / 2;
     centerY = canvas.height / 2;
     
     // Update input values
-    length1Input.value = length2Input.value = l1;
-    mass1Input.value = mass2Input.value = m1;
+    length1Input.value = length2Input.value = l1.toFixed(0);
+    mass1Input.value = mass2Input.value = m1.toFixed(0);
+    speedInput.value = "300";
     updateSpeed();
 }
 
@@ -128,7 +128,7 @@ function drawPendulum() {
 
     drawCircle();
 
-    // Calculate positions
+    // Calculate positions without scaling
     let x1 = centerX + l1 * Math.sin(a1);
     let y1 = centerY + l1 * Math.cos(a1);
     let x2 = x1 + l2 * Math.sin(a2);
