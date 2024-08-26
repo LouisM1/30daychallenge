@@ -130,7 +130,7 @@ function drawPendulum() {
 
         // Add current point to trace
         tracePoints.push({x: x2, y: y2});
-        if (tracePoints.length > 1000) {
+        if (tracePoints.length > 10000) {
             tracePoints.shift();
         }
     }
