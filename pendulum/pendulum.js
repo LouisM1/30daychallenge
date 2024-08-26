@@ -53,12 +53,29 @@ mass2Input.addEventListener('input', updateParameters);
 speedInput.addEventListener('input', updateSpeed);
 
 function updateParameters() {
-    l1 = parseFloat(length1Input.value);
-    l2 = parseFloat(length2Input.value);
-    m1 = parseFloat(mass1Input.value);
-    m2 = parseFloat(mass2Input.value);
-    if (!isAnimating) {
-        drawPendulum();
+    const inputs = [length1Input, length2Input, mass1Input, mass2Input, speedInput];
+    let hasError = false;
+
+    inputs.forEach(input => {
+        const value = parseFloat(input.value);
+        const min = parseFloat(input.min);
+        const max = parseFloat(input.max);
+
+        if (value < min || value > max) {
+            showError(`${input.id.charAt(0).toUpperCase() + input.id.slice(1)} must be between ${min} and ${max}`);
+            hasError = true;
+        }
+    });
+
+    if (!hasError) {
+        hideError();
+        l1 = parseFloat(length1Input.value);
+        l2 = parseFloat(length2Input.value);
+        m1 = parseFloat(mass1Input.value);
+        m2 = parseFloat(mass2Input.value);
+        if (!isAnimating) {
+            drawPendulum();
+        }
     }
 }
 
@@ -128,7 +145,7 @@ function drawPendulum() {
         for (let point of tracePoints) {
             ctx.lineTo(point.x, point.y);
         }
-        ctx.strokeStyle = 'rgba(255, 0, 0, 0.5)';
+        ctx.strokeStyle = traceColor;
         ctx.lineWidth = 1;
         ctx.stroke();
 
@@ -222,11 +239,9 @@ function toggleInput(activeButton) {
         }
         input.value = currentValue;
         
-        // Ensure the number input respects min and max values
-        if (isNumberActive) {
-            input.min = input.getAttribute('min');
-            input.max = input.getAttribute('max');
-        }
+        // Set min and max attributes for both number and range inputs
+        input.min = input.getAttribute('min');
+        input.max = input.getAttribute('max');
     });
 }
 
@@ -333,6 +348,15 @@ function hover(e) {
     }
 }
 
+function getRandomColor() {
+    const hue = Math.random() * 360;
+    const saturation = 100;
+    const lightness = 50 + Math.random() * 10;
+    return `hsla(${hue}, ${saturation}%, ${lightness}%, 0.7)`;
+}
+
+let traceColor = getRandomColor();
+
 function resetPendulum() {
     a1 = Math.PI / 2;
     a2 = Math.PI / 2;
@@ -342,9 +366,24 @@ function resetPendulum() {
     isTracing = false;
     startButton.textContent = 'Start';
     tracePoints = [];
+    traceColor = getRandomColor(); // Add this line
     initPendulum();
     drawPendulum();
 }
 
 const resetButton = document.getElementById('resetButton');
 resetButton.addEventListener('click', resetPendulum);
+
+function showError(message) {
+    const errorElement = document.getElementById('error-message');
+    errorElement.textContent = message;
+    errorElement.classList.add('visible');
+}
+
+function hideError() {
+    const errorElement = document.getElementById('error-message');
+    errorElement.classList.remove('visible');
+}
+
+// Set initial state to number inputs
+toggleInput(toggleNumber);
