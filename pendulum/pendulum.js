@@ -88,7 +88,6 @@ function updatePendulum(dt) {
     a1_v += (k1.a1_a + 2 * k2.a1_a + 2 * k3.a1_a + k4.a1_a) * dt / 6;
     a2_v += (k1.a2_a + 2 * k2.a2_a + 2 * k3.a2_a + k4.a2_a) * dt / 6;
 }
-
 function derivatives(a1, a2, a1_v, a2_v) {
     const delta = a1 - a2;
     const den1 = (m1 + m2) * l1 - m2 * l1 * Math.cos(delta) * Math.cos(delta);
@@ -134,7 +133,6 @@ function drawPendulum() {
     ctx.arc(x2, y2, m2, 0, 2 * Math.PI);
     ctx.fill();
 }
-
 function drawCircle() {
     ctx.beginPath();
     ctx.arc(centerX, centerY, l1 + l2, 0, 2 * Math.PI);
@@ -205,7 +203,105 @@ function toggleInput(activeButton) {
 toggleNumber.addEventListener('click', () => toggleInput(toggleNumber));
 toggleSlider.addEventListener('click', () => toggleInput(toggleSlider));
 
-const resetButton = document.getElementById('resetButton');
+let isDragging = false;
+let draggedPendulum = null;
+let isHovering = false;
+
+canvas.addEventListener('mousedown', startDrag);
+canvas.addEventListener('mousemove', handleMouseMove);
+canvas.addEventListener('mouseup', endDrag);
+canvas.addEventListener('mouseleave', endDrag);
+
+function handleMouseMove(e) {
+    if (isDragging) {
+        drag(e);
+    } else {
+        hover(e);
+    }
+}
+
+function startDrag(e) {
+    if (isAnimating) return;
+
+    const rect = canvas.getBoundingClientRect();
+    const mouseX = e.clientX - rect.left;
+    const mouseY = e.clientY - rect.top;
+
+    const x1 = centerX + l1 * Math.sin(a1);
+    const y1 = centerY + l1 * Math.cos(a1);
+    const x2 = x1 + l2 * Math.sin(a2);
+    const y2 = y1 + l2 * Math.cos(a2);
+
+    const dist1 = Math.sqrt((mouseX - x1) ** 2 + (mouseY - y1) ** 2);
+    const dist2 = Math.sqrt((mouseX - x2) ** 2 + (mouseY - y2) ** 2);
+
+    if (dist1 < m1 + 5) {
+        isDragging = true;
+        draggedPendulum = 1;
+        canvas.classList.add('dragging');
+    } else if (dist2 < m2 + 5) {
+        isDragging = true;
+        draggedPendulum = 2;
+        canvas.classList.add('dragging');
+    }
+}
+
+function drag(e) {
+    if (!isDragging || isAnimating) return;
+
+    const rect = canvas.getBoundingClientRect();
+    const mouseX = e.clientX - rect.left;
+    const mouseY = e.clientY - rect.top;
+
+    if (draggedPendulum === 1) {
+        const dx = mouseX - centerX;
+        const dy = mouseY - centerY;
+        a1 = Math.atan2(dx, dy);
+    } else if (draggedPendulum === 2) {
+        const x1 = centerX + l1 * Math.sin(a1);
+        const y1 = centerY + l1 * Math.cos(a1);
+        const dx = mouseX - x1;
+        const dy = mouseY - y1;
+        a2 = Math.atan2(dx, dy);
+    }
+
+    drawPendulum();
+}
+
+function endDrag() {
+    isDragging = false;
+    draggedPendulum = null;
+    canvas.classList.remove('dragging');
+    if (!isHovering) {
+        canvas.classList.remove('hovering');
+    }
+}
+
+function hover(e) {
+    const rect = canvas.getBoundingClientRect();
+    const mouseX = e.clientX - rect.left;
+    const mouseY = e.clientY - rect.top;
+
+    const x1 = centerX + l1 * Math.sin(a1);
+    const y1 = centerY + l1 * Math.cos(a1);
+    const x2 = x1 + l2 * Math.sin(a2);
+    const y2 = y1 + l2 * Math.cos(a2);
+
+    const dist1 = Math.sqrt((mouseX - x1) ** 2 + (mouseY - y1) ** 2);
+    const dist2 = Math.sqrt((mouseX - x2) ** 2 + (mouseY - y2) ** 2);
+
+    if (dist1 < m1 + 5 || dist2 < m2 + 5) {
+        if (!isHovering) {
+            isHovering = true;
+            canvas.classList.add('hovering');
+        }
+    } else {
+        if (isHovering) {
+            isHovering = false;
+            canvas.classList.remove('hovering');
+        }
+    }
+}
 
 function resetPendulum() {
     a1 = Math.PI / 2;
@@ -218,4 +314,5 @@ function resetPendulum() {
     drawPendulum();
 }
 
+const resetButton = document.getElementById('resetButton');
 resetButton.addEventListener('click', resetPendulum);
