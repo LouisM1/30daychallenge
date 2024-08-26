@@ -13,6 +13,8 @@ const speedInput = document.getElementById('speed');
 const g = 9.81; // Gravity
 let l1, l2, m1, m2, centerX, centerY;
 let speedMultiplier = 70; // Initial speed value
+let tracePoints = [];
+let isTracing = false;
 
 let isAnimating = false;
 
@@ -115,6 +117,24 @@ function drawPendulum() {
     let x2 = x1 + l2 * Math.sin(a2);
     let y2 = y1 + l2 * Math.cos(a2);
 
+    if (isTracing) {
+        // Draw trace
+        ctx.beginPath();
+        ctx.moveTo(tracePoints[0]?.x, tracePoints[0]?.y);
+        for (let point of tracePoints) {
+            ctx.lineTo(point.x, point.y);
+        }
+        ctx.strokeStyle = 'rgba(255, 0, 0, 0.5)';
+        ctx.lineWidth = 1;
+        ctx.stroke();
+
+        // Add current point to trace
+        tracePoints.push({x: x2, y: y2});
+        if (tracePoints.length > 1000) {
+            tracePoints.shift();
+        }
+    }
+
     // Draw lines
     ctx.beginPath();
     ctx.moveTo(centerX, centerY);
@@ -144,7 +164,7 @@ function drawCircle() {
 let lastTime = 0;
 
 function animate(currentTime) {
-    if (lastTime === 0) {
+    if (lastTime === 0 || !isAnimating) {
         lastTime = currentTime;
     }
 
@@ -163,6 +183,7 @@ function animate(currentTime) {
 startButton.addEventListener('click', () => {
     if (!isAnimating) {
         isAnimating = true;
+        isTracing = true;
         startButton.textContent = 'Stop';
         requestAnimationFrame(animate);
     } else {
@@ -309,7 +330,9 @@ function resetPendulum() {
     a1_v = 0;
     a2_v = 0;
     isAnimating = false;
+    isTracing = false;
     startButton.textContent = 'Start';
+    tracePoints = [];
     initPendulum();
     drawPendulum();
 }
