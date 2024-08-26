@@ -57,11 +57,11 @@ function updateParameters() {
     let hasError = false;
 
     inputs.forEach(input => {
-        const value = parseFloat(input.value);
+        const value = input.value === '' ? null : parseFloat(input.value);
         const min = parseFloat(input.min);
         const max = parseFloat(input.max);
 
-        if (value < min || value > max) {
+        if (value !== null && (isNaN(value) || value > max)) {
             showError(`${input.id.charAt(0).toUpperCase() + input.id.slice(1)} must be between ${min} and ${max}`);
             hasError = true;
         }
@@ -69,10 +69,10 @@ function updateParameters() {
 
     if (!hasError) {
         hideError();
-        l1 = parseFloat(length1Input.value);
-        l2 = parseFloat(length2Input.value);
-        m1 = parseFloat(mass1Input.value);
-        m2 = parseFloat(mass2Input.value);
+        l1 = length1Input.value === '' ? parseFloat(length1Input.min) : Math.max(parseFloat(length1Input.value), parseFloat(length1Input.min));
+        l2 = length2Input.value === '' ? parseFloat(length2Input.min) : Math.max(parseFloat(length2Input.value), parseFloat(length2Input.min));
+        m1 = mass1Input.value === '' ? parseFloat(mass1Input.min) : Math.max(parseFloat(mass1Input.value), parseFloat(mass1Input.min));
+        m2 = mass2Input.value === '' ? parseFloat(mass2Input.min) : Math.max(parseFloat(mass2Input.value), parseFloat(mass2Input.min));
         if (!isAnimating) {
             drawPendulum();
         }
