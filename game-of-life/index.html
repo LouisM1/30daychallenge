@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game of Life</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Game of Life</h1>
+        <div class="controls">
+            <button id="start">Start</button>
+            <button id="stop">Stop</button>
+            <button id="clear">Clear</button>
+            <button id="random">Random</button>
+            <label for="speed">Speed:</label>
+            <input type="range" id="speed" min="1" max="10" value="5">
+            <label for="size">Grid Size:</label>
+            <select id="size">
+                <option value="20">20x20</option>
+                <option value="30">30x30</option>
+                <option value="40">40x40</option>
+            </select>
+        </div>
+        <div id="grid"></div>
+    </div>
+    <script src="gameoflife.js"></script>
+</body>
+</html>
