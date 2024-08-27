@@ -42,6 +42,24 @@
             <div class="graph-container">
                 <canvas id="populationGraph"></canvas>
             </div>
+            <div class="info-text">
+                <p>Conway's Game of Life, invented by mathematician John Conway in 1970, is a fascinating cellular automaton simulation. The game takes place on a grid where each cell can be either alive or dead. The fate of each cell is determined by its eight neighboring cells, following these simple rules:</p>
+                <ul>
+                    <li>Any live cell with fewer than two live neighbors dies (underpopulation).</li>
+                    <li>Any live cell with two or three live neighbors lives on to the next generation.</li>
+                    <li>Any live cell with more than three live neighbors dies (overpopulation).</li>
+                    <li>Any dead cell with exactly three live neighbors becomes a live cell (reproduction).</li>
+                </ul>
+                <p>Despite its simplicity, the Game of Life can produce incredibly complex patterns. Some notable discoveries include:</p>
+                <ul>
+                    <li>Gliders: Small patterns that move diagonally across the grid.</li>
+                    <li>Oscillators: Patterns that repeat themselves after a fixed number of generations.</li>
+                    <li>Spaceships: Larger moving patterns, like the "lightweight spaceship" (LWSS).</li>
+                    <li>Guns: Patterns that periodically emit gliders or other moving objects.</li>
+                    <li>Pulsars: The most common period 3 oscillator.</li>
+                </ul>
+                <p>The Game of Life has applications in various fields, including computer science, biology, and physics. It demonstrates how complex systems can emerge from simple rules, making it a powerful tool for studying emergence, self-organization, and computational universality.</p>
+            </div>
         </div>
     </div>
     <script src="gameoflife.js"></script>
