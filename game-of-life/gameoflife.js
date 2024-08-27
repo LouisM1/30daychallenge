@@ -38,8 +38,7 @@ class GameOfLife {
             }
         }
 
-        gridElement.addEventListener('mousedown', () => this.startDrawing());
-        gridElement.addEventListener('mousemove', (e) => this.draw(e));
+        gridElement.addEventListener('mousedown', (e) => { this.startDrawing(); this.draw(e); });
         gridElement.addEventListener('mouseup', () => this.stopDrawing());
         gridElement.addEventListener('mouseleave', () => this.stopDrawing());
 
@@ -215,14 +214,13 @@ class GameOfLife {
         return count;
     }
 
-    startDrawing(e) {
+    startDrawing() {
         this.isDrawing = true;
         document.getElementById('grid').classList.add('drawing');
-        this.draw(e);
     }
 
     draw(e) {
-        if (!this.isDrawing) return;
+        if (!this.isDrawing || !e || !e.target) return;
         const cell = e.target;
         if (cell.classList.contains('cell')) {
             const row = parseInt(cell.dataset.row);
