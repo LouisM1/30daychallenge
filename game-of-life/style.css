@@ -54,6 +54,7 @@ body {
     display: grid;
     gap: 1px;
     background-color: #333333;
+    border: 1px solid #333333;
 }
 
 .cell {
