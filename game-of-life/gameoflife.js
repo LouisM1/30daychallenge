@@ -163,8 +163,43 @@ class GameOfLife {
     }
 
     updateSize() {
-        const width = document.getElementById('width').value;
-        const height = document.getElementById('height').value;
+        let width = parseInt(document.getElementById('width').value);
+        let height = parseInt(document.getElementById('height').value);
+
+        const widthPopup = document.getElementById('widthPopup');
+        const heightPopup = document.getElementById('heightPopup');
+
+        const showPopup = (popup, message) => {
+            popup.textContent = message;
+            popup.style.display = 'block';
+            popup.style.opacity = '1';
+            setTimeout(() => {
+                popup.style.opacity = '0';
+                setTimeout(() => {
+                    popup.style.display = 'none';
+                }, 300);
+            }, 3000);
+        };
+
+        if (width < 5) {
+            width = 5;
+            showPopup(widthPopup, 'Minimum width is 5');
+        } else if (width > 70) {
+            width = 70;
+            showPopup(widthPopup, 'Maximum width is 70');
+        }
+
+        if (height < 5) {
+            height = 5;
+            showPopup(heightPopup, 'Minimum height is 5');
+        } else if (height > 50) {
+            height = 50;
+            showPopup(heightPopup, 'Maximum height is 50');
+        }
+
+        document.getElementById('width').value = width;
+        document.getElementById('height').value = height;
+
         console.log(`updateSize called with width: ${width}, height: ${height}`);
         this.setSize(width, height);
         this.updatePopulation();
