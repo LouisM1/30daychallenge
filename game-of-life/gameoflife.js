@@ -300,49 +300,14 @@ class GameOfLife {
     }
 }
 
-const game = new GameOfLife(20, 20);
+const game = new GameOfLife(30, 30);
 
 // Add this to the end of the file
 function makeWindowsDraggable() {
-    const windows = document.querySelectorAll('.window');
-    let isDragging = false;
-    let currentWindow = null;
-    let offsetX, offsetY;
-
-    windows.forEach(window => {
-        const header = window.querySelector('.window-header');
-        header.addEventListener('mousedown', startDragging);
-    });
-
-    document.addEventListener('mousemove', drag);
-    document.addEventListener('mouseup', stopDragging);
-
-    function startDragging(e) {
-        isDragging = true;
-        currentWindow = e.target.closest('.window');
-        offsetX = e.clientX - currentWindow.getBoundingClientRect().left;
-        offsetY = e.clientY - currentWindow.getBoundingClientRect().top;
-        currentWindow.style.position = 'absolute';
-        currentWindow.style.zIndex = 1000;
-    }
-
-    function drag(e) {
-        if (!isDragging) return;
-        const x = e.clientX - offsetX;
-        const y = e.clientY - offsetY;
-        currentWindow.style.left = `${x}px`;
-        currentWindow.style.top = `${y}px`;
-    }
-
-    function stopDragging() {
-        isDragging = false;
-        if (currentWindow) {
-            currentWindow.style.zIndex = '';
-        }
-        currentWindow = null;
-    }
+    // Remove the draggable functionality
 }
 
+// Keep the function call
 makeWindowsDraggable();
 
 function updateRangeProgress() {

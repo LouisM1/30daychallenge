@@ -1,5 +1,5 @@
 body {
-    font-family: Arial, sans-serif;
+    font-family: Helvetica, Arial, sans-serif;
     margin: 0;
     padding: 0;
     background-color: #000000;
@@ -38,7 +38,7 @@ body {
     background-color: #222222;
     padding: 10px;
     font-weight: bold;
-    cursor: move;
+    cursor: default;
 }
 
 #gridContainer {
@@ -115,6 +115,7 @@ input[type="number"] {
 
 input[type="range"] {
     -webkit-appearance: none;
+    appearance: none;
     width: 100%;
     background: transparent;
     margin: 10px 0;
