@@ -4,13 +4,13 @@ body {
     padding: 0;
     background-color: #000000;
     color: #ffffff;
-    height: 100vh;
     overflow: hidden;
 }
 
 .container {
     display: flex;
-    height: 100vh;
+    height: calc(100vh - 60px); /* Adjust for title */
+    margin-top: 10px;
 }
 
 .window {
@@ -171,6 +171,13 @@ input[type="range"]::-moz-range-track {
     background-color: #222222;
     font-size: 14px;
     border-bottom: 1px solid #333333;
+}
+
+h1 {
+    text-align: center;
+    color: #ffffff;
+    margin-top: 10px;
+    margin-bottom: 5px;
 }
 
 /* Rest of the CSS remains the same */
