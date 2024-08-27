@@ -62,6 +62,12 @@ class GameOfLife {
         gridElement.addEventListener('mousemove', (e) => this.draw(e));
         gridElement.addEventListener('mouseup', () => this.stopDrawing());
         gridElement.addEventListener('mouseleave', () => this.stopDrawing());
+        document.querySelectorAll('.pattern-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const pattern = e.target.dataset.pattern;
+                this.drawPattern(pattern);
+            });
+        });
     }
 
     toggleCell(row, col) {
@@ -360,6 +366,86 @@ class GameOfLife {
             this.chart.data.labels.push(this.generation);
             this.chart.data.datasets[0].data = this.populationData;
             this.chart.update('none'); // Use 'none' mode for performance
+        }
+    }
+
+    drawPattern(pattern) {
+        this.clear();
+        const centerX = Math.floor(this.width / 2);
+        const centerY = Math.floor(this.height / 2);
+
+        switch (pattern) {
+            case 'glider':
+                this.drawGlider(centerX, centerY);
+                break;
+            case 'lwss':
+                this.drawLWSS(centerX, centerY);
+                break;
+            case 'pulsar':
+                this.drawPulsar(centerX, centerY);
+                break;
+            case 'gosperGliderGun':
+                this.drawGosperGliderGun(1, 1);
+                break;
+        }
+
+        this.updateAllCells();
+        this.updatePopulation();
+    }
+
+    drawGlider(x, y) {
+        const glider = [[0, 1, 0], [0, 0, 1], [1, 1, 1]];
+        this.drawShape(x, y, glider);
+    }
+
+    drawLWSS(x, y) {
+        const lwss = [[0, 1, 1, 1, 1], [1, 0, 0, 0, 1], [0, 0, 0, 0, 1], [1, 0, 0, 1, 0]];
+        this.drawShape(x, y, lwss);
+    }
+
+    drawPulsar(x, y) {
+        const pulsar = [
+            [0, 0, 1, 1, 1, 0, 0, 0, 1, 1, 1, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [1, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 1],
+            [1, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 1],
+            [1, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 1],
+            [0, 0, 1, 1, 1, 0, 0, 0, 1, 1, 1, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 1, 1, 1, 0, 0, 0, 1, 1, 1, 0, 0],
+            [1, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 1],
+            [1, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 1],
+            [1, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 1],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 1, 1, 1, 0, 0, 0, 1, 1, 1, 0, 0]
+        ];
+        this.drawShape(x - 6, y - 6, pulsar);
+    }
+
+    drawGosperGliderGun(x, y) {
+        const gun = [
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1],
+            [1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 1, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+        ];
+        this.drawShape(x, y, gun);
+    }
+
+    drawShape(x, y, shape) {
+        for (let i = 0; i < shape.length; i++) {
+            for (let j = 0; j < shape[i].length; j++) {
+                if (shape[i][j] === 1) {
+                    const newX = (x + j + this.width) % this.width;
+                    const newY = (y + i + this.height) % this.height;
+                    this.grid[newY][newX] = true;
+                }
+            }
         }
     }
 }

@@ -238,3 +238,25 @@ h1 {
     opacity: 0;
     transition: opacity 0.3s ease-in-out;
 }
+
+.info-text .pattern-btn {
+    background: none;
+    border: none;
+    color: #ffffff;
+    padding: 0;
+    font: inherit;
+    cursor: pointer;
+    display: inline;
+    margin: 0;
+    text-decoration: underline;
+    text-decoration-color: #ffffff;
+    text-underline-offset: 2px;
+}
+
+.info-text .pattern-btn:hover {
+    text-decoration-thickness: 2px;
+}
+
+.info-text ul li {
+    margin-bottom: 10px;
+}
