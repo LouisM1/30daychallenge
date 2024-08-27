@@ -2,7 +2,7 @@ body {
     font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
-    background-color: #000;
+    background-color: #1e1e1e;
     color: #fff;
     height: 100vh;
     overflow: hidden;
@@ -13,15 +13,30 @@ body {
     height: 100vh;
 }
 
+.window {
+    background-color: #2d2d2d;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin: 10px;
+    overflow: hidden;
+}
+
 .game-window {
     flex: 7;
     display: flex;
     flex-direction: column;
-    overflow: hidden;
 }
 
 .controls-window {
     flex: 3;
+    border-left: 2px solid #444;
+}
+
+.window-header {
+    background-color: #3c3c3c;
+    padding: 10px;
+    font-weight: bold;
+    cursor: move;
 }
 
 #gridContainer {
@@ -37,17 +52,73 @@ body {
     display: grid;
     gap: 1px;
     background-color: #333;
+    border: 1px solid #444;
 }
 
 .cell {
     width: 15px;
     height: 15px;
-    background-color: #000;
+    background-color: #1e1e1e;
     border: 1px solid #333;
+    transition: background-color 0.2s;
 }
 
 .cell.alive {
-    background-color: #fff;
+    background-color: #4caf50;
+}
+
+.controls {
+    padding: 20px;
+}
+
+button {
+    background-color: #4caf50;
+    border: none;
+    color: white;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 14px;
+    margin: 4px 2px;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background-color 0.3s;
+}
+
+button:hover {
+    background-color: #45a049;
+}
+
+.input-group {
+    margin: 10px 0;
+}
+
+label {
+    display: inline-block;
+    width: 60px;
+}
+
+input[type="range"], input[type="number"] {
+    width: 100%;
+    padding: 5px;
+    border: 1px solid #444;
+    background-color: #2d2d2d;
+    color: #fff;
+    border-radius: 4px;
+}
+
+.graph-container {
+    padding: 20px;
+    height: 200px;
+}
+
+.counters {
+    display: flex;
+    justify-content: space-around;
+    padding: 10px;
+    background-color: #3c3c3c;
+    font-size: 14px;
 }
 
 /* Rest of the CSS remains the same */
