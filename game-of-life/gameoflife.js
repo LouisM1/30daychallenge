@@ -18,6 +18,7 @@ class GameOfLife {
     }
 
     initializeGrid() {
+        console.log(`initializeGrid called with dimensions: ${this.width}x${this.height}`);
         const gridElement = document.getElementById('grid');
         gridElement.style.gridTemplateColumns = `repeat(${this.width}, 15px)`;
         gridElement.style.gridTemplateRows = `repeat(${this.height}, 15px)`;
@@ -33,6 +34,11 @@ class GameOfLife {
                 gridElement.appendChild(cell);
             }
         }
+
+        // Update input fields to reflect current size
+        document.getElementById('width').value = this.width;
+        document.getElementById('height').value = this.height;
+        console.log(`Grid initialized with ${this.width * this.height} cells`);
     }
 
     addEventListeners() {
@@ -103,12 +109,29 @@ class GameOfLife {
     }
 
     setSize(width, height) {
+        console.log(`setSize called with width: ${width}, height: ${height}`);
+        this.stop();
         this.width = parseInt(width);
         this.height = parseInt(height);
+        console.log(`New dimensions: ${this.width}x${this.height}`);
         this.grid = Array(this.height).fill().map(() => Array(this.width).fill(false));
         this.nextGrid = Array(this.height).fill().map(() => Array(this.width).fill(false));
         this.initializeGrid();
         this.updatePopulation();
+        this.generation = 0;
+        this.updateGeneration();
+        this.populationData = [];
+        this.chart.data.labels = [];
+        this.chart.data.datasets[0].data = [];
+        this.chart.update();
+        console.log('setSize completed');
+    }
+
+    updateSize() {
+        const width = document.getElementById('width').value;
+        const height = document.getElementById('height').value;
+        console.log(`updateSize called with width: ${width}, height: ${height}`);
+        this.setSize(width, height);
     }
 
     updateAllCells() {
