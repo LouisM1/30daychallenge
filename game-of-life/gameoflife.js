@@ -201,6 +201,7 @@ class GameOfLife {
         this.updateAllCells();
         this.updateGeneration();
         this.updatePopulation();
+        this.updateChart();
     }
 
     countNeighbors(row, col) {
@@ -319,10 +320,12 @@ class GameOfLife {
     }
 
     updateChart() {
-        this.populationData.push(this.population);
-        this.chart.data.labels.push(this.generation);
-        this.chart.data.datasets[0].data = this.populationData;
-        this.chart.update('none'); // Use 'none' mode for performance
+        if (this.isRunning) {
+            this.populationData.push(this.population);
+            this.chart.data.labels.push(this.generation);
+            this.chart.data.datasets[0].data = this.populationData;
+            this.chart.update('none'); // Use 'none' mode for performance
+        }
     }
 }
 
