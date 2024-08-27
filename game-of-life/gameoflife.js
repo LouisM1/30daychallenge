@@ -208,7 +208,7 @@ class GameOfLife {
                 datasets: [{
                     label: 'Population',
                     data: [],
-                    borderColor: 'rgb(75, 192, 192)',
+                    borderColor: '#ffffff',
                     tension: 0.1,
                     pointRadius: 0 // Hide points for better performance
                 }]
@@ -227,6 +227,9 @@ class GameOfLife {
                         },
                         ticks: {
                             maxTicksLimit: 10 // Limit the number of x-axis ticks
+                        },
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.1)'
                         }
                     },
                     y: {
@@ -234,7 +237,10 @@ class GameOfLife {
                             display: true,
                             text: 'Population'
                         },
-                        beginAtZero: true
+                        beginAtZero: true,
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.1)'
+                        }
                     }
                 },
                 plugins: {

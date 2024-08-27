@@ -2,8 +2,8 @@ body {
     font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
-    background-color: #1e1e1e;
-    color: #fff;
+    background-color: #000000;
+    color: #ffffff;
     height: 100vh;
     overflow: hidden;
 }
@@ -14,11 +14,12 @@ body {
 }
 
 .window {
-    background-color: #2d2d2d;
+    background-color: #111111;
     border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 6px rgba(255, 255, 255, 0.1);
     margin: 10px;
     overflow: hidden;
+    border: 2px solid #333333;
 }
 
 .game-window {
@@ -29,11 +30,10 @@ body {
 
 .controls-window {
     flex: 3;
-    border-left: 2px solid #444;
 }
 
 .window-header {
-    background-color: #3c3c3c;
+    background-color: #222222;
     padding: 10px;
     font-weight: bold;
     cursor: move;
@@ -46,35 +46,37 @@ body {
     justify-content: center;
     align-items: center;
     padding: 20px;
+    background-color: #0a0a0a;
+    border: 1px solid #333333;
 }
 
 #grid {
     display: grid;
     gap: 1px;
-    background-color: #333;
-    border: 1px solid #444;
+    background-color: #333333;
 }
 
 .cell {
     width: 15px;
     height: 15px;
-    background-color: #1e1e1e;
-    border: 1px solid #333;
+    background-color: #000000;
     transition: background-color 0.2s;
 }
 
 .cell.alive {
-    background-color: #4caf50;
+    background-color: #ffffff;
 }
 
 .controls {
     padding: 20px;
+    background-color: #0a0a0a;
+    border: 1px solid #333333;
 }
 
 button {
-    background-color: #4caf50;
-    border: none;
-    color: white;
+    background-color: #222222;
+    border: 1px solid #444444;
+    color: #ffffff;
     padding: 10px 20px;
     text-align: center;
     text-decoration: none;
@@ -87,7 +89,7 @@ button {
 }
 
 button:hover {
-    background-color: #45a049;
+    background-color: #333333;
 }
 
 .input-group {
@@ -102,23 +104,26 @@ label {
 input[type="range"], input[type="number"] {
     width: 100%;
     padding: 5px;
-    border: 1px solid #444;
-    background-color: #2d2d2d;
-    color: #fff;
+    border: 1px solid #444444;
+    background-color: #222222;
+    color: #ffffff;
     border-radius: 4px;
 }
 
 .graph-container {
     padding: 20px;
     height: 200px;
+    background-color: #0a0a0a;
+    border: 1px solid #333333;
 }
 
 .counters {
     display: flex;
     justify-content: space-around;
     padding: 10px;
-    background-color: #3c3c3c;
+    background-color: #222222;
     font-size: 14px;
+    border-bottom: 1px solid #333333;
 }
 
 /* Rest of the CSS remains the same */
