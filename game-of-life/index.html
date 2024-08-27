@@ -5,25 +5,43 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Game of Life</title>
     <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
     <div class="container">
-        <h1>Game of Life</h1>
-        <div class="controls">
-            <button id="start">Start</button>
-            <button id="stop">Stop</button>
-            <button id="clear">Clear</button>
-            <button id="random">Random</button>
-            <label for="speed">Speed:</label>
-            <input type="range" id="speed" min="1" max="10" value="5">
-            <label for="size">Grid Size:</label>
-            <select id="size">
-                <option value="20">20x20</option>
-                <option value="30">30x30</option>
-                <option value="40">40x40</option>
-            </select>
+        <div class="window game-window" id="gameWindow">
+            <div class="window-header">Game</div>
+            <div class="counters">
+                <div>Generation: <span id="generation">0</span></div>
+                <div>Population: <span id="population">0</span></div>
+            </div>
+            <div id="gridContainer">
+                <div id="grid"></div>
+            </div>
         </div>
-        <div id="grid"></div>
+        <div class="window controls-window" id="controlsWindow">
+            <div class="window-header">Controls</div>
+            <div class="controls">
+                <button id="startStop">Start</button>
+                <button id="clear">Clear</button>
+                <button id="random">Random</button>
+                <div class="input-group">
+                    <label for="speed">Speed:</label>
+                    <input type="range" id="speed" min="1" max="10" value="5">
+                </div>
+                <div class="input-group">
+                    <label for="width">Width:</label>
+                    <input type="number" id="width" min="10" max="100" value="20">
+                </div>
+                <div class="input-group">
+                    <label for="height">Height:</label>
+                    <input type="number" id="height" min="10" max="100" value="20">
+                </div>
+            </div>
+            <div class="graph-container">
+                <canvas id="populationGraph"></canvas>
+            </div>
+        </div>
     </div>
     <script src="gameoflife.js"></script>
 </body>
