@@ -11,6 +11,7 @@ class GameOfLife {
         this.generation = 0;
         this.population = 0;
         this.populationData = [];
+        this.drawState = null;
 
         this.initializeGrid();
         this.addEventListeners();
@@ -38,7 +39,8 @@ class GameOfLife {
             }
         }
 
-        gridElement.addEventListener('mousedown', (e) => { this.startDrawing(); this.draw(e); });
+        gridElement.addEventListener('mousedown', (e) => this.startDrawing(e));
+        gridElement.addEventListener('mousemove', (e) => this.draw(e));
         gridElement.addEventListener('mouseup', () => this.stopDrawing());
         gridElement.addEventListener('mouseleave', () => this.stopDrawing());
 
@@ -214,9 +216,15 @@ class GameOfLife {
         return count;
     }
 
-    startDrawing() {
+    startDrawing(e) {
         this.isDrawing = true;
         document.getElementById('grid').classList.add('drawing');
+        if (e.target.classList.contains('cell')) {
+            const row = parseInt(e.target.dataset.row);
+            const col = parseInt(e.target.dataset.col);
+            this.drawState = !this.grid[row][col];
+            this.toggleCell(row, col);
+        }
     }
 
     draw(e) {
@@ -225,10 +233,8 @@ class GameOfLife {
         if (cell.classList.contains('cell')) {
             const row = parseInt(cell.dataset.row);
             const col = parseInt(cell.dataset.col);
-            if (!this.grid[row][col]) {
-                this.grid[row][col] = true;
-                this.updateCell(row, col);
-                this.updatePopulation();
+            if (this.grid[row][col] !== this.drawState) {
+                this.toggleCell(row, col);
             }
         }
     }
