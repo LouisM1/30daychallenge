@@ -110,20 +110,35 @@ class GameOfLife {
 
     setSize(width, height) {
         console.log(`setSize called with width: ${width}, height: ${height}`);
-        this.stop();
+        const wasRunning = this.isRunning;
+        if (wasRunning) {
+            this.stop();
+        }
+        const oldWidth = this.width;
+        const oldHeight = this.height;
         this.width = parseInt(width);
         this.height = parseInt(height);
         console.log(`New dimensions: ${this.width}x${this.height}`);
-        this.grid = Array(this.height).fill().map(() => Array(this.width).fill(false));
-        this.nextGrid = Array(this.height).fill().map(() => Array(this.width).fill(false));
+
+        const newGrid = Array(this.height).fill().map(() => Array(this.width).fill(false));
+        const newNextGrid = Array(this.height).fill().map(() => Array(this.width).fill(false));
+
+        // Copy the existing state to the new grid
+        for (let i = 0; i < Math.min(oldHeight, this.height); i++) {
+            for (let j = 0; j < Math.min(oldWidth, this.width); j++) {
+                newGrid[i][j] = this.grid[i][j];
+            }
+        }
+
+        this.grid = newGrid;
+        this.nextGrid = newNextGrid;
         this.initializeGrid();
         this.updatePopulation();
-        this.generation = 0;
-        this.updateGeneration();
-        this.populationData = [];
-        this.chart.data.labels = [];
-        this.chart.data.datasets[0].data = [];
-        this.chart.update();
+        this.updateAllCells();
+
+        if (wasRunning) {
+            this.start();
+        }
         console.log('setSize completed');
     }
 
@@ -132,6 +147,8 @@ class GameOfLife {
         const height = document.getElementById('height').value;
         console.log(`updateSize called with width: ${width}, height: ${height}`);
         this.setSize(width, height);
+        this.updatePopulation();
+        this.updateGeneration();
     }
 
     updateAllCells() {
