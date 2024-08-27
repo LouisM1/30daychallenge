@@ -304,3 +304,12 @@ function makeWindowsDraggable() {
 }
 
 makeWindowsDraggable();
+
+function updateRangeProgress() {
+    const rangeInput = document.getElementById('speed');
+    const progress = (rangeInput.value - rangeInput.min) / (rangeInput.max - rangeInput.min) * 100;
+    rangeInput.style.setProperty('--range-progress', `${progress}%`);
+}
+
+document.getElementById('speed').addEventListener('input', updateRangeProgress);
+updateRangeProgress(); // Initial call to set the progress on page load
