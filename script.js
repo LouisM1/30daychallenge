@@ -1,4 +1,19 @@
 // You can add any JavaScript functionality here
+(function() {
+    // Create a script element
+    var vercelScript = document.createElement('script');
+
+    // Set the type and src attributes
+    vercelScript.type = 'text/javascript';
+    vercelScript.src = 'https://vercel.analytics/script.js';
+
+    // Optionally, set the defer attribute to load it after the HTML parsing
+    vercelScript.defer = true;
+
+    // Append the script to the <head> or <body>
+    document.head.appendChild(vercelScript);
+})();
+
 console.log("Portfolio website loaded!");
 
 document.addEventListener('DOMContentLoaded', function() {
