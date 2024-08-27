@@ -30,10 +30,18 @@ class GameOfLife {
                 cell.classList.add('cell');
                 cell.dataset.row = i;
                 cell.dataset.col = j;
-                cell.addEventListener('click', () => this.toggleCell(i, j));
+                cell.addEventListener('mousedown', (e) => {
+                    e.preventDefault(); // Prevent text selection
+                    this.toggleCell(i, j);
+                });
                 gridElement.appendChild(cell);
             }
         }
+
+        gridElement.addEventListener('mousedown', () => this.startDrawing());
+        gridElement.addEventListener('mousemove', (e) => this.draw(e));
+        gridElement.addEventListener('mouseup', () => this.stopDrawing());
+        gridElement.addEventListener('mouseleave', () => this.stopDrawing());
 
         // Update input fields to reflect current size
         document.getElementById('width').value = this.width;
@@ -56,13 +64,24 @@ class GameOfLife {
     }
 
     toggleCell(row, col) {
+        console.log(`Cell clicked: row ${row}, col ${col}`);
         this.grid[row][col] = !this.grid[row][col];
         this.updateCell(row, col);
+        this.updatePopulation();
     }
 
     updateCell(row, col) {
         const cell = document.querySelector(`.cell[data-row="${row}"][data-col="${col}"]`);
-        cell.classList.toggle('alive', this.grid[row][col]);
+        if (cell) {
+            if (this.grid[row][col]) {
+                cell.classList.add('alive');
+            } else {
+                cell.classList.remove('alive');
+            }
+            console.log(`Cell updated: row ${row}, col ${col}, alive: ${this.grid[row][col]}`);
+        } else {
+            console.error(`Cell not found: row ${row}, col ${col}`);
+        }
     }
 
     start() {
@@ -208,8 +227,11 @@ class GameOfLife {
         if (cell.classList.contains('cell')) {
             const row = parseInt(cell.dataset.row);
             const col = parseInt(cell.dataset.col);
-            this.grid[row][col] = true;
-            this.updateCell(row, col);
+            if (!this.grid[row][col]) {
+                this.grid[row][col] = true;
+                this.updateCell(row, col);
+                this.updatePopulation();
+            }
         }
     }
 
