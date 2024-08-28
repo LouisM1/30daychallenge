@@ -41,18 +41,18 @@ const ControlPanel = () => {
         Axiom:
         <input
           type="text"
-          name="axiom"
           value={lSystem.axiom}
-          onChange={handleLSystemChange}
+          readOnly
+          disabled
         />
       </label>
       <label>
         Angle:
         <input
           type="number"
-          name="angle"
           value={lSystem.angle}
-          onChange={handleLSystemChange}
+          readOnly
+          disabled
         />
       </label>
       <label>
@@ -75,9 +75,9 @@ const ControlPanel = () => {
           {key}:
           <input
             type="text"
-            name={key}
             value={value}
-            onChange={handleRuleChange}
+            readOnly
+            disabled
           />
         </label>
       ))}
