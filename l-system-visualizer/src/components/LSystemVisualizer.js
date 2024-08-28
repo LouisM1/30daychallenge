@@ -36,7 +36,7 @@ const LSystemVisualizer = () => {
     ctx.clearRect(0, 0, width, height);
     const lSystemString = generateLSystem(lSystem.axiom, lSystem.rules, lSystem.iterations);
 
-    ctx.strokeStyle = visualParams.lineColor;
+    ctx.strokeStyle = '#FFFFFF';
     ctx.lineWidth = visualParams.lineThickness;
     ctx.beginPath();
 

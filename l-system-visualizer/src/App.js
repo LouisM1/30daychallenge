@@ -8,13 +8,17 @@ import { LSystemProvider } from './contexts/LSystemContext';
 function App() {
   return (
     <div className="App">
-      <h1>L-System Visualizer</h1>
       <LSystemProvider>
         <div className="main-content">
-          <LSystemVisualizer />
-          <ControlPanel />
+          <div className="left-panel">
+            <h1>L-System Visualizer</h1>
+            <ControlPanel />
+            <Gallery />
+          </div>
+          <div className="right-panel">
+            <LSystemVisualizer />
+          </div>
         </div>
-        <Gallery />
       </LSystemProvider>
     </div>
   );
