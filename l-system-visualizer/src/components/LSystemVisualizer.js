@@ -31,7 +31,7 @@ const LSystemVisualizer = () => {
 
   const handleWheel = (e) => {
     e.preventDefault();
-    const zoomFactor = 1 - e.deltaY * 0.001;
+    const zoomFactor = 1 - e.deltaY * 0.01;
     setZoom(prevZoom => Math.max(0.1, Math.min(10, prevZoom * zoomFactor)));
   };
 
@@ -102,6 +102,16 @@ const LSystemVisualizer = () => {
 
     ctx.stroke();
   }, [lSystem, visualParams, offset, zoom]);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (canvas) {
+      canvas.addEventListener('wheel', handleWheel, { passive: false });
+      return () => {
+        canvas.removeEventListener('wheel', handleWheel);
+      };
+    }
+  }, []);
 
   const calculateBoundingBox = (lSystemString) => {
     let x = 0, y = 0, minX = 0, maxX = 0, minY = 0, maxY = 0;
