@@ -40,91 +40,103 @@ const LSystemVisualizer = () => {
     ctx.lineWidth = visualParams.lineThickness;
     ctx.beginPath();
 
-    let x, y, angle;
+    const { minX, maxX, minY, maxY } = calculateBoundingBox(lSystemString);
+    const patternWidth = maxX - minX;
+    const patternHeight = maxY - minY;
+    const scale = Math.min(width / patternWidth, height / patternHeight) * 0.8;
+    const startX = width / 2 - (patternWidth * scale) / 2 - minX * scale;
+    const startY = height / 2 - (patternHeight * scale) / 2 - minY * scale;
+
+    let x = startX, y = startY, angle = -90;  // Start with -90 degrees (pointing up)
     const stack = [];
-    let stepSize = 5 * visualParams.zoom;
+    const stepSize = 5 * visualParams.zoom * scale;
 
-    const drawLine = (x1, y1, x2, y2) => {
-      ctx.moveTo(x1 + offset.x, y1 + offset.y);
-      ctx.lineTo(x2 + offset.x, y2 + offset.y);
-    };
-
-    switch (lSystem.name) {
-      case "Sierpinski Carpet":
-      case "Koch Curve":
-      case "Koch Snowflake":
-      case "Moore Fractal":
-      case "Sierpinski Triangle":
-      case "Dragon Curve":
-      case "Fractal Plant":
-        x = width / 2;
-        y = height / 2;
-        angle = 0;
-        for (const char of lSystemString) {
-          switch (char) {
-            case 'F':
-            case 'G':
-              const newX = x + Math.cos(angle * Math.PI / 180) * stepSize;
-              const newY = y + Math.sin(angle * Math.PI / 180) * stepSize;
-              drawLine(x, y, newX, newY);
-              x = newX;
-              y = newY;
-              break;
-            case '+':
-              angle += lSystem.angle;
-              break;
-            case '-':
-              angle -= lSystem.angle;
-              break;
-            case '[':
-              stack.push({ x, y, angle });
-              break;
-            case ']':
-              const state = stack.pop();
-              x = state.x;
-              y = state.y;
-              angle = state.angle;
-              break;
-            case 'L':
-            case 'R':
-            case 'X':
-            case 'Y':
-              // These characters don't affect drawing
-              break;
+    for (const char of lSystemString) {
+      switch (char) {
+        case 'F':
+        case 'G':
+        case '0':
+        case '1':
+          const newX = x + Math.cos(angle * Math.PI / 180) * stepSize;
+          const newY = y + Math.sin(angle * Math.PI / 180) * stepSize;
+          ctx.moveTo(x + offset.x, y + offset.y);
+          ctx.lineTo(newX + offset.x, newY + offset.y);
+          x = newX;
+          y = newY;
+          break;
+        case '+':
+          angle += lSystem.angle;
+          break;
+        case '-':
+          angle -= lSystem.angle;
+          break;
+        case '[':
+          stack.push({ x, y, angle });
+          if (lSystem.name === "Fractal Binary Tree") {
+            angle -= lSystem.angle;
           }
-        }
-        break;
-      case "Fractal Binary Tree":
-        x = width / 2;
-        y = height;
-        angle = -90;
-        for (const char of lSystemString) {
-          switch (char) {
-            case '0':
-            case '1':
-              const newX = x + Math.cos(angle * Math.PI / 180) * stepSize;
-              const newY = y + Math.sin(angle * Math.PI / 180) * stepSize;
-              drawLine(x, y, newX, newY);
-              x = newX;
-              y = newY;
-              break;
-            case '[':
-              stack.push({ x, y, angle });
-              angle -= lSystem.angle;
-              break;
-            case ']':
-              const state = stack.pop();
-              x = state.x;
-              y = state.y;
-              angle = state.angle + lSystem.angle;
-              break;
+          break;
+        case ']':
+          const state = stack.pop();
+          x = state.x;
+          y = state.y;
+          angle = state.angle;
+          ctx.moveTo(x + offset.x, y + offset.y);
+          if (lSystem.name === "Fractal Binary Tree") {
+            angle += lSystem.angle;
           }
-        }
-        break;
+          break;
+      }
     }
 
     ctx.stroke();
   }, [lSystem, visualParams, offset]);
+
+  const calculateBoundingBox = (lSystemString) => {
+    let x = 0, y = 0, minX = 0, maxX = 0, minY = 0, maxY = 0;
+    let angle = -90;  // Start with -90 degrees (pointing up)
+    const stack = [];
+    const stepSize = 5;
+
+    for (const char of lSystemString) {
+      switch (char) {
+        case 'F':
+        case 'G':
+        case '0':
+        case '1':
+          x += Math.cos(angle * Math.PI / 180) * stepSize;
+          y += Math.sin(angle * Math.PI / 180) * stepSize;
+          minX = Math.min(minX, x);
+          maxX = Math.max(maxX, x);
+          minY = Math.min(minY, y);
+          maxY = Math.max(maxY, y);
+          break;
+        case '+':
+          angle += lSystem.angle;
+          break;
+        case '-':
+          angle -= lSystem.angle;
+          break;
+        case '[':
+          stack.push({ x, y, angle });
+          if (lSystem.name === "Fractal Binary Tree") {
+            angle -= lSystem.angle;
+          }
+          break;
+        case ']':
+          const state = stack.pop();
+          x = state.x;
+          y = state.y;
+          angle = state.angle;
+          if (lSystem.name === "Fractal Binary Tree") {
+            angle += lSystem.angle;
+          }
+          break;
+      }
+    }
+
+    return { minX, maxX, minY, maxY };
+  };
 
   return (
     <canvas
