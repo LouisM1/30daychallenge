@@ -29,7 +29,6 @@ const ControlPanel = () => {
 
   return (
     <div className="control-panel">
-      <h2>L-System Parameters</h2>
       <label>
         Preset L-Systems:
         <select onChange={handlePresetChange}>
