@@ -64,7 +64,7 @@ const presetSystems = {
 export const LSystemProvider = ({ children }) => {
   const [lSystem, setLSystem] = useState(presetSystems.sierpinskiCarpet);
   const [visualParams, setVisualParams] = useState({
-    lineColor: '#000000',
+    lineColor: '#FFFFFF',
     lineThickness: 1,
     zoom: 1,
   });
