@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState, useCallback } from 'react';
 import { LSystemContext } from '../contexts/LSystemContext';
 import { generateLSystem } from '../utils/LSystemGenerator';
 
@@ -10,6 +10,7 @@ const LSystemVisualizer = () => {
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
   const [animationProgress, setAnimationProgress] = useState(0);
+  const animationRef = useRef(null);
 
   const handleMouseDown = (e) => {
     setIsDragging(true);
@@ -36,28 +37,40 @@ const LSystemVisualizer = () => {
     setZoom(prevZoom => Math.max(0.1, Math.min(10, prevZoom * zoomFactor)));
   };
 
+  const cancelAnimation = useCallback(() => {
+    if (animationRef.current) {
+      cancelAnimationFrame(animationRef.current);
+      animationRef.current = null;
+    }
+  }, []);
+
+  const clearCanvas = useCallback(() => {
+    const canvas = canvasRef.current;
+    const ctx = canvas.getContext('2d');
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+  }, []);
+
   useEffect(() => {
-    console.log('Effect triggered. lSystem:', lSystem, 'visualParams:', visualParams);
+    cancelAnimation();
+    clearCanvas();
+    setAnimationProgress(0);
+
     const canvas = canvasRef.current;
     const ctx = canvas.getContext('2d');
     
     canvas.width = canvas.clientWidth;
     canvas.height = canvas.clientHeight;
     const { width, height } = canvas;
-    console.log('Canvas dimensions:', width, height);
 
     const lSystemString = generateLSystem(lSystem.axiom, lSystem.rules, lSystem.iterations);
-    console.log('Generated L-System string:', lSystemString);
 
     const { minX, maxX, minY, maxY } = calculateBoundingBox(lSystemString);
-    console.log('Bounding box:', { minX, maxX, minY, maxY });
 
     const patternWidth = maxX - minX;
     const patternHeight = maxY - minY;
     const scale = Math.min(width / patternWidth, height / patternHeight) * 0.8 * zoom;
     const startX = width / 2 - (patternWidth * scale) / 2 - minX * scale;
     const startY = height / 2 - (patternHeight * scale) / 2 - minY * scale;
-    console.log('Starting position:', { startX, startY, scale });
 
     let x = startX, y = startY, angle = -90;
     const stack = [];
@@ -67,7 +80,6 @@ const LSystemVisualizer = () => {
     const totalSteps = lSystemString.length;
 
     const animate = () => {
-      console.log('Animation frame. Progress:', currentIndex / totalSteps);
       ctx.strokeStyle = visualParams.lineColor;
       ctx.lineWidth = visualParams.lineThickness;
       ctx.beginPath();
@@ -75,7 +87,6 @@ const LSystemVisualizer = () => {
       const stepsPerFrame = Math.max(1, Math.floor(totalSteps / 100));
       for (let step = 0; step < stepsPerFrame && currentIndex < totalSteps; step++) {
         const char = lSystemString[currentIndex];
-        console.log('Processing character:', char, 'at index:', currentIndex);
         switch (char) {
           case 'F':
           case 'G':
@@ -87,22 +98,18 @@ const LSystemVisualizer = () => {
             ctx.lineTo(newX + offset.x, newY + offset.y);
             x = newX;
             y = newY;
-            console.log('Drew line to:', { x, y });
             break;
           case '+':
             angle += lSystem.angle;
-            console.log('Turned right. New angle:', angle);
             break;
           case '-':
             angle -= lSystem.angle;
-            console.log('Turned left. New angle:', angle);
             break;
           case '[':
             stack.push({ x, y, angle });
             if (lSystem.name === "Fractal Binary Tree") {
               angle -= lSystem.angle;
             }
-            console.log('Pushed state to stack');
             break;
           case ']':
             const state = stack.pop();
@@ -113,28 +120,27 @@ const LSystemVisualizer = () => {
             if (lSystem.name === "Fractal Binary Tree") {
               angle += lSystem.angle;
             }
-            console.log('Popped state from stack');
             break;
         }
         currentIndex++;
       }
-
       ctx.stroke();
 
       setAnimationProgress(currentIndex / totalSteps);
 
       if (currentIndex < totalSteps) {
-        requestAnimationFrame(animate);
+        animationRef.current = requestAnimationFrame(animate);
       } else {
-        console.log('Animation complete');
+        animationRef.current = null;
       }
     };
 
-    ctx.clearRect(0, 0, width, height);
-    console.log('Canvas cleared. Starting animation.');
-    animate();
+    animationRef.current = requestAnimationFrame(animate);
 
-  }, [lSystem, visualParams, offset, zoom]);
+    return () => {
+      cancelAnimation();
+    };
+  }, [lSystem, visualParams, offset, zoom, cancelAnimation, clearCanvas]);
 
   useEffect(() => {
     const canvas = canvasRef.current;

@@ -91,3 +91,28 @@ canvas {
   background-color: #4CAF50;
   transition: width 0.1s ease-out;
 }
+
+.iterations-control {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.iterations-control input {
+  width: 50px;
+  text-align: center;
+  margin: 0 5px;
+}
+
+.iterations-control button {
+  width: 30px;
+  height: 30px;
+  font-size: 18px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #222222;
+  color: #FFFFFF;
+  border: 1px solid #444444;
+  cursor: pointer;
+}

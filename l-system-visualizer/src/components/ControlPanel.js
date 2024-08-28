@@ -56,15 +56,17 @@ const ControlPanel = () => {
           onChange={handleLSystemChange}
         />
       </label>
-      <label>
-        Iterations:
+      <div className="iterations-control">
+        <button onClick={() => handleLSystemChange({ target: { name: 'iterations', value: Math.max(1, lSystem.iterations - 1) } })}>-</button>
         <input
           type="number"
           name="iterations"
           value={lSystem.iterations}
           onChange={handleLSystemChange}
+          min="1"
         />
-      </label>
+        <button onClick={() => handleLSystemChange({ target: { name: 'iterations', value: lSystem.iterations + 1 } })}>+</button>
+      </div>
       <h3>Rules</h3>
       {Object.entries(lSystem.rules).map(([key, value]) => (
         <label key={key}>
