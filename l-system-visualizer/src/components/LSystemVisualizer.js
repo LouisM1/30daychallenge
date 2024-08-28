@@ -8,6 +8,7 @@ const LSystemVisualizer = () => {
   const [offset, setOffset] = useState({ x: 0, y: 0 });
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
+  const [zoom, setZoom] = useState(1);
 
   const handleMouseDown = (e) => {
     setIsDragging(true);
@@ -28,9 +29,19 @@ const LSystemVisualizer = () => {
     setIsDragging(false);
   };
 
+  const handleWheel = (e) => {
+    e.preventDefault();
+    const zoomFactor = 1 - e.deltaY * 0.001;
+    setZoom(prevZoom => Math.max(0.1, Math.min(10, prevZoom * zoomFactor)));
+  };
+
   useEffect(() => {
     const canvas = canvasRef.current;
     const ctx = canvas.getContext('2d');
+    
+    // Set canvas size to match its display size
+    canvas.width = canvas.clientWidth;
+    canvas.height = canvas.clientHeight;
     const { width, height } = canvas;
 
     ctx.clearRect(0, 0, width, height);
@@ -43,7 +54,7 @@ const LSystemVisualizer = () => {
     const { minX, maxX, minY, maxY } = calculateBoundingBox(lSystemString);
     const patternWidth = maxX - minX;
     const patternHeight = maxY - minY;
-    const scale = Math.min(width / patternWidth, height / patternHeight) * 0.8;
+    const scale = Math.min(width / patternWidth, height / patternHeight) * 0.8 * zoom;
     const startX = width / 2 - (patternWidth * scale) / 2 - minX * scale;
     const startY = height / 2 - (patternHeight * scale) / 2 - minY * scale;
 
@@ -90,7 +101,7 @@ const LSystemVisualizer = () => {
     }
 
     ctx.stroke();
-  }, [lSystem, visualParams, offset]);
+  }, [lSystem, visualParams, offset, zoom]);
 
   const calculateBoundingBox = (lSystemString) => {
     let x = 0, y = 0, minX = 0, maxX = 0, minY = 0, maxY = 0;
@@ -141,13 +152,16 @@ const LSystemVisualizer = () => {
   return (
     <canvas
       ref={canvasRef}
-      width="800"
-      height="600"
       onMouseDown={handleMouseDown}
       onMouseMove={handleMouseMove}
       onMouseUp={handleMouseUp}
       onMouseLeave={handleMouseUp}
-      style={{ cursor: isDragging ? 'grabbing' : 'grab' }}
+      onWheel={handleWheel}
+      style={{ 
+        cursor: isDragging ? 'grabbing' : 'grab',
+        width: '100%',
+        height: '100%'
+      }}
     />
   );
 };
