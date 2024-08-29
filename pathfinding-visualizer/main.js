@@ -13,6 +13,10 @@ let currentAlgorithm = null;
 let isMouseDown = false;
 let isErasing = false;
 
+let routingPoint = null;
+let hasRoutingPoint = false;
+let isAddingRoutingPoint = false;
+
 function calculateGridSize() {
     const gridElement = document.getElementById('grid');
     const availableWidth = window.innerWidth;
@@ -31,6 +35,7 @@ function calculateGridSize() {
     // gridElement.style.gridTemplateRows = `repeat(${GRID_ROWS}, ${cellSize}px)`;
 }
 
+// Update the initializeGrid function
 function initializeGrid() {
     console.log("Initializing grid");
     calculateGridSize();
@@ -44,6 +49,7 @@ function initializeGrid() {
                 isStart: false,
                 isEnd: false,
                 isWall: false,
+                isRoutingPoint: false,
                 distance: Infinity,
                 previousCell: null,
                 f: 0,
@@ -57,8 +63,8 @@ function initializeGrid() {
 
     const middleRow = Math.floor(GRID_ROWS / 2);
     const middleCol = Math.floor(GRID_COLS / 2);
-    const startCol = middleCol - 8;
-    const endCol = middleCol + 8;
+    const startCol = Math.max(0, middleCol - 8);
+    const endCol = Math.min(GRID_COLS - 1, middleCol + 8);
 
     startCell = grid[middleRow][startCol];
     startCell.isStart = true;
@@ -68,6 +74,7 @@ function initializeGrid() {
     renderGrid();
 }
 
+// Update the renderGrid function
 function renderGrid() {
     console.log("Rendering grid");
     const gridElement = document.getElementById('grid');
@@ -82,6 +89,7 @@ function renderGrid() {
             cellElement.dataset.col = col;
             if (cell.isStart) cellElement.classList.add('start');
             if (cell.isEnd) cellElement.classList.add('end');
+            if (cell.isRoutingPoint) cellElement.classList.add('routing-point');
             if (cell.isWall) cellElement.classList.add('wall');
             
             gridElement.appendChild(cellElement);
@@ -97,14 +105,25 @@ function renderGrid() {
 function handleMouseDown(e, row, col) {
     isMouseDown = true;
     const cell = grid[row][col];
-    if (cell.isStart || cell.isEnd) {
+    if (isAddingRoutingPoint) {
+        if (!cell.isStart && !cell.isEnd && !cell.isWall) {
+            cell.isRoutingPoint = true;
+            routingPoint = cell;
+            hasRoutingPoint = true;
+            isAddingRoutingPoint = false;
+            const button = document.getElementById('toggle-routing-point');
+            button.textContent = 'Remove Routing Point';
+            button.classList.remove('active');
+        }
+    } else if (cell.isStart || cell.isEnd || cell.isRoutingPoint) {
         isDragging = true;
-        draggedNode = cell.isStart ? 'start' : 'end';
+        draggedNode = cell.isStart ? 'start' : (cell.isEnd ? 'end' : 'routing-point');
     } else {
         isErasing = cell.isWall;
         toggleWall(row, col);
     }
-    e.preventDefault(); // Prevent text selection while dragging
+    e.preventDefault();
+    renderGrid();
 }
 
 function handleMouseEnter(e, row, col) {
@@ -120,6 +139,10 @@ function handleMouseEnter(e, row, col) {
             endCell.isEnd = false;
             cell.isEnd = true;
             endCell = cell;
+        } else if (draggedNode === 'routing-point') {
+            routingPoint.isRoutingPoint = false;
+            cell.isRoutingPoint = true;
+            routingPoint = cell;
         }
 
         if (isPathFound) {
@@ -129,7 +152,7 @@ function handleMouseEnter(e, row, col) {
         }
     } else if (isMouseDown) {
         const cell = grid[row][col];
-        if (cell.isStart || cell.isEnd) return;
+        if (cell.isStart || cell.isEnd || cell.isRoutingPoint) return;
         cell.isWall = !isErasing;
         if (isPathFound) {
             recalculatePath();
@@ -148,13 +171,13 @@ function handleMouseUp() {
 
 function toggleWall(row, col) {
     const cell = grid[row][col];
-    if (!cell.isStart && !cell.isEnd) {
+    if (!cell.isStart && !cell.isEnd && !cell.isRoutingPoint) {
         cell.isWall = !cell.isWall;
         renderGrid();
     }
 }
 
-// Replace the existing dijkstra function with this optimized version
+// Update the dijkstra function
 async function dijkstra(instant = false) {
     currentAlgorithm = 'dijkstra';
     if (!startCell || !endCell) return;
@@ -177,7 +200,7 @@ async function dijkstra(instant = false) {
         if (closestNode === endCell) {
             if (!instant) {
                 await visualizeBatch(visitedNodesInOrder);
-                await visualizePath(instant);
+                await visualizePath(instant, closestNode);
             }
             isPathFound = true;
             return endCell;
@@ -247,7 +270,7 @@ async function aStar(instant = false) {
         if (current === endCell) {
             if (!instant) {
                 await visualizeBatchAStar(visitedNodesInOrder);  // Changed to visualizeBatchAStar
-                await visualizePath(instant);
+                await visualizePath(instant, current);
             }
             isPathFound = true;
             return endCell;
@@ -335,8 +358,8 @@ function sleep(ms) {
 }
 
 // Update the visualizePath function
-async function visualizePath(instant = false) {
-    let current = endCell;
+async function visualizePath(instant = false, targetCell = endCell) {
+    let current = targetCell;
     const pathNodes = [];
     while (current !== null) {
         pathNodes.push(current);
@@ -369,7 +392,7 @@ document.getElementById('astar').addEventListener('click', async () => {
     await aStar();
 });
 
-// Add this new function to clear the previous visualization
+// Update the clearVisualization function
 function clearVisualization(fullClear = true) {
     const cells = document.querySelectorAll('.cell');
     cells.forEach(cell => {
@@ -392,56 +415,27 @@ function clearVisualization(fullClear = true) {
     if (fullClear) {
         isPathFound = false;
         currentAlgorithm = null;
+        if (hasRoutingPoint && routingPoint) {
+            routingPoint.isRoutingPoint = false;
+            routingPoint = null;
+            hasRoutingPoint = false;
+            isAddingRoutingPoint = false;
+            const button = document.getElementById('toggle-routing-point');
+            button.textContent = 'Add Routing Point';
+            button.classList.remove('active');
+        }
     }
     renderGrid();
 }
 
-// Add this function to reset the grid
+// Update the resetGrid function
 function resetGrid() {
-    clearVisualization();
+    clearVisualization(true);
     initializeGrid();
 }
 
 // Add this event listener for the reset button
 document.getElementById('reset').addEventListener('click', resetGrid);
-
-// Update the initializeGrid function to ensure it fully resets the grid
-function initializeGrid() {
-    console.log("Initializing grid");
-    calculateGridSize();
-    grid = [];
-    for (let row = 0; row < GRID_ROWS; row++) {
-        const currentRow = [];
-        for (let col = 0; col < GRID_COLS; col++) {
-            currentRow.push({
-                row,
-                col,
-                isStart: false,
-                isEnd: false,
-                isWall: false,
-                distance: Infinity,
-                previousCell: null,
-                f: 0,
-                g: 0,
-                h: 0,
-                isVisited: false
-            });
-        }
-        grid.push(currentRow);
-    }
-
-    const middleRow = Math.floor(GRID_ROWS / 2);
-    const middleCol = Math.floor(GRID_COLS / 2);
-    const startCol = middleCol - 8;
-    const endCol = middleCol + 8;
-
-    startCell = grid[middleRow][startCol];
-    startCell.isStart = true;
-    endCell = grid[middleRow][endCol];
-    endCell.isEnd = true;
-
-    renderGrid();
-}
 
 // Update the existing DOMContentLoaded event listener
 document.addEventListener('DOMContentLoaded', () => {
@@ -449,6 +443,7 @@ document.addEventListener('DOMContentLoaded', () => {
     calculateGridSize();
     initializeGrid();
     document.getElementById('reset').addEventListener('click', resetGrid);
+    document.getElementById('toggle-routing-point').addEventListener('click', toggleRoutingPoint);
 });
 
 // Add this new function
@@ -469,7 +464,7 @@ function visualizeSearchedNodes() {
         for (let col = 0; col < GRID_COLS; col++) {
             const cell = grid[row][col];
             const cellElement = gridElement.children[row * GRID_COLS + col];
-            if (cell.isVisited && !cell.isStart && !cell.isEnd && !cell.isWall) {
+            if (cell.isVisited && !cell.isStart && !cell.isEnd && !cell.isWall && !cell.isRoutingPoint) {
                 cellElement.classList.add('visited');
             } else {
                 cellElement.classList.remove('visited');
@@ -483,4 +478,27 @@ window.addEventListener('resize', () => {
     calculateGridSize();
     resetGrid();
 });
+
+// Add this function to toggle the routing point
+function toggleRoutingPoint() {
+    const button = document.getElementById('toggle-routing-point');
+    if (hasRoutingPoint) {
+        // Remove routing point
+        if (routingPoint) {
+            routingPoint.isRoutingPoint = false;
+            routingPoint = null;
+        }
+        hasRoutingPoint = false;
+        isAddingRoutingPoint = false;
+        button.textContent = 'Add Routing Point';
+        button.classList.remove('active');
+    } else {
+        // Prepare to add routing point
+        isAddingRoutingPoint = true;
+        hasRoutingPoint = false; // Reset this flag
+        button.textContent = 'Cancel Routing Point';
+        button.classList.add('active');
+    }
+    renderGrid();
+}
 
