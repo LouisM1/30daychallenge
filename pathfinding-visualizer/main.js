@@ -13,10 +13,6 @@ let currentAlgorithm = null;
 let isMouseDown = false;
 let isErasing = false;
 
-let routingPoint = null;
-let hasRoutingPoint = false;
-let isAddingRoutingPoint = false;
-
 function calculateGridSize() {
     const gridElement = document.getElementById('grid');
     const availableWidth = window.innerWidth;
@@ -49,7 +45,6 @@ function initializeGrid() {
                 isStart: false,
                 isEnd: false,
                 isWall: false,
-                isRoutingPoint: false,
                 distance: Infinity,
                 previousCell: null,
                 f: 0,
@@ -89,7 +84,6 @@ function renderGrid() {
             cellElement.dataset.col = col;
             if (cell.isStart) cellElement.classList.add('start');
             if (cell.isEnd) cellElement.classList.add('end');
-            if (cell.isRoutingPoint) cellElement.classList.add('routing-point');
             if (cell.isWall) cellElement.classList.add('wall');
             
             gridElement.appendChild(cellElement);
@@ -105,19 +99,9 @@ function renderGrid() {
 function handleMouseDown(e, row, col) {
     isMouseDown = true;
     const cell = grid[row][col];
-    if (isAddingRoutingPoint) {
-        if (!cell.isStart && !cell.isEnd && !cell.isWall) {
-            cell.isRoutingPoint = true;
-            routingPoint = cell;
-            hasRoutingPoint = true;
-            isAddingRoutingPoint = false;
-            const button = document.getElementById('toggle-routing-point');
-            button.textContent = 'Remove Routing Point';
-            button.classList.remove('active');
-        }
-    } else if (cell.isStart || cell.isEnd || cell.isRoutingPoint) {
+    if (cell.isStart || cell.isEnd) {
         isDragging = true;
-        draggedNode = cell.isStart ? 'start' : (cell.isEnd ? 'end' : 'routing-point');
+        draggedNode = cell.isStart ? 'start' : 'end';
     } else {
         isErasing = cell.isWall;
         toggleWall(row, col);
@@ -139,25 +123,17 @@ function handleMouseEnter(e, row, col) {
             endCell.isEnd = false;
             cell.isEnd = true;
             endCell = cell;
-        } else if (draggedNode === 'routing-point') {
-            routingPoint.isRoutingPoint = false;
-            cell.isRoutingPoint = true;
-            routingPoint = cell;
         }
 
-        if (isPathFound) {
-            recalculatePath();
-        } else {
-            renderGrid();
-        }
+        renderGrid();
+        calculatePathInstant(); // Always calculate path instantly when dragging
     } else if (isMouseDown) {
         const cell = grid[row][col];
-        if (cell.isStart || cell.isEnd || cell.isRoutingPoint) return;
+        if (cell.isStart || cell.isEnd) return;
         cell.isWall = !isErasing;
+        renderGrid();
         if (isPathFound) {
-            recalculatePath();
-        } else {
-            renderGrid();
+            calculatePathInstant();
         }
     }
 }
@@ -167,11 +143,12 @@ function handleMouseUp() {
     isDragging = false;
     draggedNode = null;
     isErasing = false;
+    // Remove the recalculatePath call, as we want to keep the instant result
 }
 
 function toggleWall(row, col) {
     const cell = grid[row][col];
-    if (!cell.isStart && !cell.isEnd && !cell.isRoutingPoint) {
+    if (!cell.isStart && !cell.isEnd) {
         cell.isWall = !cell.isWall;
         renderGrid();
     }
@@ -198,7 +175,7 @@ async function dijkstra(visualize = true) {
         visitedNodesInOrder.push(closestNode);
 
         if (closestNode === endCell) {
-            console.log(`Dijkstra found target: ${endCell === routingPoint ? 'Routing Point' : 'End Point'}`);
+            console.log(`Dijkstra found target: End Point`);
             if (visualize) {
                 await visualizeBatch(visitedNodesInOrder);
                 await visualizePath(false, closestNode);
@@ -210,7 +187,7 @@ async function dijkstra(visualize = true) {
         updateUnvisitedNeighbors(closestNode);
     }
 
-    console.log(`Dijkstra did not find target: ${endCell === routingPoint ? 'Routing Point' : 'End Point'}`);
+    console.log(`Dijkstra did not find target: End Point`);
     if (visualize) {
         await visualizeBatch(visitedNodesInOrder);
     }
@@ -270,7 +247,7 @@ async function aStar(visualize = true) {
         const current = getLowestFScoreNode(openSet);
 
         if (current === endCell) {
-            console.log(`A* found target: ${endCell === routingPoint ? 'Routing Point' : 'End Point'}`);
+            console.log(`A* found target: End Point`);
             if (visualize) {
                 await visualizeBatchAStar(visitedNodesInOrder);  // Changed to visualizeBatchAStar
                 await visualizePath(false, current);
@@ -303,7 +280,7 @@ async function aStar(visualize = true) {
         }
     }
 
-    console.log(`A* did not find target: ${endCell === routingPoint ? 'Routing Point' : 'End Point'}`);
+    console.log(`A* did not find target: End Point`);
     if (visualize) {
         await visualizeBatchAStar(visitedNodesInOrder);  // Changed to visualizeBatchAStar
     }
@@ -384,19 +361,22 @@ async function visualizePath(instant = false, path) {
 // Update the event listeners to clear the previous visualization
 document.getElementById('dijkstra').addEventListener('click', async () => {
     clearVisualization();
-    await runAlgorithmWithRoutingPoint(dijkstra);
+    await runAlgorithm(dijkstra);
 });
 
 document.getElementById('astar').addEventListener('click', async () => {
     clearVisualization();
-    await runAlgorithmWithRoutingPoint(aStar);
+    await runAlgorithm(aStar);
 });
 
 // Update the clearVisualization function
 function clearVisualization(fullClear = true) {
     const cells = document.querySelectorAll('.cell');
     cells.forEach(cell => {
-        cell.classList.remove('visited', 'path');
+        cell.classList.remove('visited');
+        if (fullClear) {
+            cell.classList.remove('path');
+        }
     });
     
     for (let row = 0; row < GRID_ROWS; row++) {
@@ -415,16 +395,6 @@ function clearVisualization(fullClear = true) {
     if (fullClear) {
         isPathFound = false;
         currentAlgorithm = null;
-        // Remove this part to keep the routing point
-        // if (hasRoutingPoint && routingPoint) {
-        //     routingPoint.isRoutingPoint = false;
-        //     routingPoint = null;
-        //     hasRoutingPoint = false;
-        //     isAddingRoutingPoint = false;
-        //     const button = document.getElementById('toggle-routing-point');
-        //     button.textContent = 'Add Routing Point';
-        //     button.classList.remove('active');
-        // }
     }
     renderGrid();
 }
@@ -444,17 +414,17 @@ document.addEventListener('DOMContentLoaded', () => {
     calculateGridSize();
     initializeGrid();
     document.getElementById('reset').addEventListener('click', resetGrid);
-    document.getElementById('toggle-routing-point').addEventListener('click', toggleRoutingPoint);
 });
 
 // Add this new function
 async function recalculatePath() {
     clearVisualization(false);
     if (currentAlgorithm === 'dijkstra') {
-        await runAlgorithmWithRoutingPoint(dijkstra);
+        await runAlgorithm(dijkstra);
     } else if (currentAlgorithm === 'astar') {
-        await runAlgorithmWithRoutingPoint(aStar);
+        await runAlgorithm(aStar);
     }
+    isPathFound = true;  // Set this to true after recalculation
 }
 
 function visualizeSearchedNodes() {
@@ -463,7 +433,7 @@ function visualizeSearchedNodes() {
         for (let col = 0; col < GRID_COLS; col++) {
             const cell = grid[row][col];
             const cellElement = gridElement.children[row * GRID_COLS + col];
-            if (cell.isVisited && !cell.isStart && !cell.isEnd && !cell.isWall && !cell.isRoutingPoint) {
+            if (cell.isVisited && !cell.isStart && !cell.isEnd && !cell.isWall) {
                 cellElement.classList.add('visited');
             } else {
                 cellElement.classList.remove('visited');
@@ -478,78 +448,15 @@ window.addEventListener('resize', () => {
     resetGrid();
 });
 
-// Add this function to toggle the routing point
-function toggleRoutingPoint() {
-    const button = document.getElementById('toggle-routing-point');
-    if (hasRoutingPoint) {
-        // Remove routing point
-        if (routingPoint) {
-            routingPoint.isRoutingPoint = false;
-            routingPoint = null;
-        }
-        hasRoutingPoint = false;
-        isAddingRoutingPoint = false;
-        button.textContent = 'Add Routing Point';
-        button.classList.remove('active');
-    } else {
-        // Prepare to add routing point
-        isAddingRoutingPoint = true;
-        hasRoutingPoint = false; // Reset this flag
-        button.textContent = 'Cancel Routing Point';
-        button.classList.add('active');
-    }
-    renderGrid();
-}
-
-// Add this function to run the algorithm in two parts
-async function runAlgorithmWithRoutingPoint(algorithm) {
+// Update the runAlgorithm function to runAlgorithm
+async function runAlgorithm(algorithm) {
     clearVisualization(false);
-    const originalStart = startCell;
-    const originalEnd = endCell;
-    let allVisitedNodes = [];
-    let fullPath = [];
-
-    if (!hasRoutingPoint || !routingPoint) {
-        // If there's no routing point, run the algorithm normally
-        const result = await algorithm(false);
-        allVisitedNodes = result.visitedNodesInOrder;
-        fullPath = getPathFromEndNode(originalEnd);
-        console.log("End point found!");
-    } else {
-        // First, find path to routing point
-        endCell = routingPoint;
-        const result1 = await algorithm(false);
-        if (result1.endNode) {
-            console.log("Routing point found!");
-            allVisitedNodes = result1.visitedNodesInOrder;
-            fullPath = getPathFromEndNode(routingPoint);
-
-            // Then, find path from routing point to end
-            startCell = routingPoint;
-            endCell = originalEnd;
-            const result2 = await algorithm(false);
-            if (result2.endNode) {
-                console.log("End point found!");
-                allVisitedNodes = allVisitedNodes.concat(result2.visitedNodesInOrder);
-                fullPath = fullPath.concat(getPathFromEndNode(originalEnd).slice(1)); // Slice to avoid duplicating the routing point
-            } else {
-                console.log("End point not found after routing point!");
-            }
-        } else {
-            console.log("Routing point not found!");
-        }
+    const result = await algorithm(true);  // Set visualize to true
+    if (result.endNode) {
+        const fullPath = getPathFromEndNode(endCell);
+        await visualizePath(false, fullPath);
     }
-
-    // Reset start and end cells
-    startCell = originalStart;
-    endCell = originalEnd;
-    
-    // Visualize the full path
-    await visualizeBatch(allVisitedNodes);
-    await visualizePath(false, fullPath);
-
-    // Reset the grid cells for the next run
-    resetGridCells();
+    isPathFound = true;
 }
 
 // Helper function to get the path from the end node
@@ -584,7 +491,7 @@ async function dijkstra(visualize = true) {
         visitedNodesInOrder.push(closestNode);
 
         if (closestNode === endCell) {
-            console.log(`Dijkstra found target: ${endCell === routingPoint ? 'Routing Point' : 'End Point'}`);
+            console.log(`Dijkstra found target: End Point`);
             if (visualize) {
                 await visualizeBatch(visitedNodesInOrder);
                 await visualizePath(false, closestNode);
@@ -596,7 +503,7 @@ async function dijkstra(visualize = true) {
         updateUnvisitedNeighbors(closestNode);
     }
 
-    console.log(`Dijkstra did not find target: ${endCell === routingPoint ? 'Routing Point' : 'End Point'}`);
+    console.log(`Dijkstra did not find target: End Point`);
     if (visualize) {
         await visualizeBatch(visitedNodesInOrder);
     }
@@ -618,7 +525,7 @@ async function aStar(visualize = true) {
         const current = getLowestFScoreNode(openSet);
 
         if (current === endCell) {
-            console.log(`A* found target: ${endCell === routingPoint ? 'Routing Point' : 'End Point'}`);
+            console.log(`A* found target: End Point`);
             if (visualize) {
                 await visualizeBatchAStar(visitedNodesInOrder);
                 await visualizePath(false, current);
@@ -651,7 +558,7 @@ async function aStar(visualize = true) {
         }
     }
 
-    console.log(`A* did not find target: ${endCell === routingPoint ? 'Routing Point' : 'End Point'}`);
+    console.log(`A* did not find target: End Point`);
     if (visualize) {
         await visualizeBatchAStar(visitedNodesInOrder);
     }
@@ -683,13 +590,125 @@ function resetGridCells() {
     for (let row = 0; row < GRID_ROWS; row++) {
         for (let col = 0; col < GRID_COLS; col++) {
             const cell = grid[row][col];
-            cell.isVisited = false;
-            cell.distance = Infinity;
-            cell.previousCell = null;
-            cell.f = 0;
-            cell.g = 0;
-            cell.h = 0;
+            if (!cell.isWall) {
+                cell.isVisited = false;
+                cell.distance = Infinity;
+                cell.previousCell = null;
+                cell.f = 0;
+                cell.g = 0;
+                cell.h = 0;
+            }
         }
     }
     startCell.distance = 0;
+}
+
+// Update the calculatePathInstant function to set isPathFound
+function calculatePathInstant() {
+    resetGridCells();
+    clearVisualization(false);
+    let result;
+    if (currentAlgorithm === 'dijkstra') {
+        result = dijkstraInstant();
+    } else if (currentAlgorithm === 'astar') {
+        result = aStarInstant();
+    }
+    if (result && result.endNode) {
+        visualizeVisitedNodesInstant(result.visitedNodesInOrder);
+        const path = getPathFromEndNode(endCell);
+        visualizePathInstant(path);
+        isPathFound = true; // Set this to true after instant calculation
+    } else {
+        isPathFound = false; // Set this to false if no path is found
+    }
+}
+
+function dijkstraInstant() {
+    if (!startCell || !endCell) return null;
+
+    const unvisitedNodes = new Set(getAllNodes());
+    const visitedNodesInOrder = [];
+    startCell.distance = 0;
+
+    while (unvisitedNodes.size) {
+        const closestNode = getClosestNode(unvisitedNodes);
+        if (!closestNode) break;
+
+        if (closestNode.isWall) continue;
+        if (closestNode.distance === Infinity) return null;
+
+        closestNode.isVisited = true;
+        unvisitedNodes.delete(closestNode);
+        visitedNodesInOrder.push(closestNode);
+
+        if (closestNode === endCell) {
+            return { endNode: endCell, visitedNodesInOrder };
+        }
+
+        updateUnvisitedNeighbors(closestNode);
+    }
+
+    return null;
+}
+
+function aStarInstant() {
+    if (!startCell || !endCell) return null;
+
+    const openSet = new Set([startCell]);
+    const closedSet = new Set();
+    const visitedNodesInOrder = [];
+
+    startCell.g = 0;
+    startCell.f = heuristic(startCell, endCell);
+
+    while (openSet.size > 0) {
+        const current = getLowestFScoreNode(openSet);
+
+        if (current === endCell) {
+            return { endNode: endCell, visitedNodesInOrder };
+        }
+
+        openSet.delete(current);
+        closedSet.add(current);
+        visitedNodesInOrder.push(current);
+
+        const neighbors = getNeighbors(current);
+        for (const neighbor of neighbors) {
+            if (closedSet.has(neighbor) || neighbor.isWall) continue;
+
+            const tentativeG = current.g + 1;
+
+            if (!openSet.has(neighbor)) {
+                openSet.add(neighbor);
+            } else if (tentativeG >= neighbor.g) {
+                continue;
+            }
+
+            neighbor.previousCell = current;
+            neighbor.g = tentativeG;
+            neighbor.h = heuristic(neighbor, endCell);
+            neighbor.f = neighbor.g + neighbor.h;
+        }
+    }
+
+    return null;
+}
+
+function visualizePathInstant(path) {
+    const cells = document.querySelectorAll('.cell');
+    cells.forEach(cell => cell.classList.remove('path'));
+    
+    path.forEach(node => {
+        const cellElement = document.querySelector(`.cell[data-row="${node.row}"][data-col="${node.col}"]`);
+        cellElement.classList.add('path');
+    });
+}
+
+function visualizeVisitedNodesInstant(visitedNodes) {
+    visitedNodes.forEach(node => {
+        if (!node.isStart && !node.isEnd && !node.isWall) {
+            const cellElement = document.querySelector(`.cell[data-row="${node.row}"][data-col="${node.col}"]`);
+            cellElement.classList.add('visited');
+        }
+    });
 }
