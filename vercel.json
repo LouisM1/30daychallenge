@@ -1,0 +1,13 @@
+{
+  "rewrites": [
+    {
+      "source": "/pendulum",
+      "destination": "/pendulum/index.html"
+    },
+    {
+      "source": "/game-of-life",
+      "destination": "/game-of-life/index.html"
+    }
+
+  ]
+}
