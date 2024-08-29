@@ -402,6 +402,12 @@ function clearVisualization(fullClear = true) {
 // Update the resetGrid function
 function resetGrid() {
     clearVisualization(true);
+    for (let row = 0; row < GRID_ROWS; row++) {
+        for (let col = 0; col < GRID_COLS; col++) {
+            grid[row][col].isWall = false;
+            grid[row][col].isVisited = false;
+        }
+    }
     initializeGrid();
 }
 
@@ -705,6 +711,9 @@ function visualizePathInstant(path) {
 }
 
 function visualizeVisitedNodesInstant(visitedNodes) {
+    const cells = document.querySelectorAll('.cell');
+    cells.forEach(cell => cell.classList.remove('visited'));
+    
     visitedNodes.forEach(node => {
         if (!node.isStart && !node.isEnd && !node.isWall) {
             const cellElement = document.querySelector(`.cell[data-row="${node.row}"][data-col="${node.col}"]`);
@@ -712,3 +721,94 @@ function visualizeVisitedNodesInstant(visitedNodes) {
         }
     });
 }
+
+function generateMaze() {
+    clearVisualization(true);
+    resetGrid();
+    
+    // Mark all cells as walls initially
+    for (let row = 0; row < GRID_ROWS; row++) {
+        for (let col = 0; col < GRID_COLS; col++) {
+            if (!grid[row][col].isStart && !grid[row][col].isEnd) {
+                grid[row][col].isWall = true;
+            }
+        }
+    }
+
+    const stack = [];
+    const startRow = Math.floor(Math.random() * GRID_ROWS);
+    const startCol = Math.floor(Math.random() * GRID_COLS);
+    stack.push(grid[startRow][startCol]);
+
+    animateMazeGeneration(stack);
+}
+
+async function animateMazeGeneration(stack) {
+    while (stack.length > 0) {
+        const current = stack.pop();
+        if (!current.isVisited && !current.isStart && !current.isEnd) {
+            current.isWall = false;
+            current.isVisited = true;
+            await visualizeMazeCell(current);
+        }
+
+        const neighbors = getUnvisitedNeighbors(current);
+        if (neighbors.length > 0) {
+            stack.push(current);
+            const next = neighbors[Math.floor(Math.random() * neighbors.length)];
+            removeWallBetween(current, next);
+            stack.push(next);
+        }
+    }
+
+    // Reset isVisited property
+    for (let row = 0; row < GRID_ROWS; row++) {
+        for (let col = 0; col < GRID_COLS; col++) {
+            grid[row][col].isVisited = false;
+        }
+    }
+
+    renderGrid();
+}
+
+function getUnvisitedNeighbors(cell) {
+    const neighbors = [];
+    const { row, col } = cell;
+
+    const directions = [
+        { row: -2, col: 0 },
+        { row: 2, col: 0 },
+        { row: 0, col: -2 },
+        { row: 0, col: 2 }
+    ];
+
+    for (const dir of directions) {
+        const newRow = row + dir.row;
+        const newCol = col + dir.col;
+        if (newRow >= 0 && newRow < GRID_ROWS && newCol >= 0 && newCol < GRID_COLS) {
+            const neighbor = grid[newRow][newCol];
+            if (!neighbor.isVisited && !neighbor.isStart && !neighbor.isEnd) {
+                neighbors.push(neighbor);
+            }
+        }
+    }
+
+    return neighbors;
+}
+
+function removeWallBetween(cell1, cell2) {
+    const rowDiff = cell2.row - cell1.row;
+    const colDiff = cell2.col - cell1.col;
+    const wallRow = cell1.row + rowDiff / 2;
+    const wallCol = cell1.col + colDiff / 2;
+    grid[wallRow][wallCol].isWall = false;
+}
+
+async function visualizeMazeCell(cell) {
+    const cellElement = document.querySelector(`.cell[data-row="${cell.row}"][data-col="${cell.col}"]`);
+    cellElement.classList.remove('wall');
+    await sleep(10);
+}
+
+// Add this event listener for the generate maze button
+document.getElementById('generate-maze').addEventListener('click', generateMaze);

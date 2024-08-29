@@ -95,3 +95,14 @@ body {
     background-color: white;
     color: black;
 }
+#generate-maze {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+}
+
+/* Remove this hover effect */
+/* #generate-maze:hover {
+    background-color: #45a049;
+} */
+
