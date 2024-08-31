@@ -1,23 +1,18 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useState } from 'react';
+import BubbleSortVisualizer from './BubbleSortVisualizer';
 
 function App() {
+  const [visualizerKey, setVisualizerKey] = useState(0);
+
+  const resetVisualizer = () => {
+    setVisualizerKey(prevKey => prevKey + 1);
+  };
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <h1>Bubble Sort Visualizer</h1>
+      <BubbleSortVisualizer key={visualizerKey} />
+      <button onClick={resetVisualizer} style={{ marginTop: '10px' }}>Reset</button>
     </div>
   );
 }
