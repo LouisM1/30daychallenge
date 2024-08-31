@@ -1,6 +1,7 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "homepage_url": "/sorting-visualizer",
+  "short_name": "Sort Visualizer",
+  "name": "Sorting Algorithms Visualizer",
   "icons": [
     {
       "src": "favicon.ico",
