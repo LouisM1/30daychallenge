@@ -1,12 +1,15 @@
-const express = require('express');
-const { Configuration, OpenAIApi } = require('openai');
-require('dotenv').config();
+import express from 'express';
+import { OpenAIApi, Configuration } from 'openai';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 const app = express();
 const port = 3000;
 
 const configuration = new Configuration({
     apiKey: process.env.OPENAI_API_KEY,
+    organization: "org-aYKhkt2VC9B3VqmisTJNZ16Z", // Replace with your actual organization ID if needed
 });
 const openai = new OpenAIApi(configuration);
 
@@ -18,6 +21,7 @@ app.get('/generate-quote', async (req, res) => {
             throw new Error('OpenAI API key is missing');
         }
 
+        console.log('Environment Variables:', process.env); // Log environment variables
         console.log('API Key:', process.env.OPENAI_API_KEY); // Log the API key (be careful with this in production)
         console.log('Starting OpenAI API request');
         
