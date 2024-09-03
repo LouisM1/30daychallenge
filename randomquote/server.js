@@ -16,6 +16,7 @@ const openai = new OpenAIApi(configuration);
 app.use(express.static('public'));
 
 app.get('/generate-quote', async (req, res) => {
+    console.log('Received request at /generate-quote'); // Add this line
     try {
         if (!process.env.OPENAI_API_KEY) {
             throw new Error('OpenAI API key is missing');
